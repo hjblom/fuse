@@ -1,0 +1,5 @@
+components:
+    - name: test
+    - name: test2
+      requires:
+        - test
