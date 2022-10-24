@@ -1,4 +1,4 @@
-package file
+package osi
 
 import (
 	"errors"
@@ -8,11 +8,11 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
-	mock "github.com/hjblom/fuse/internal/util/file/mock"
+	mock "github.com/hjblom/fuse/internal/util/osi/mock"
 )
 
-func TestNewFileIO(t *testing.T) {
-	f := NewFileIO()
+func TestNewOS(t *testing.T) {
+	f := NewOS()
 	assert.NotNil(t, f)
 }
 
@@ -21,7 +21,7 @@ func TestFileIO_Read(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mock := mock.NewMockInterface(ctrl)
-	f := FileIO{
+	f := OS{
 		readFile:  mock.ReadFile,
 		writeFile: mock.WriteFile,
 	}
@@ -50,7 +50,7 @@ func TestFileIO_Write(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mock := mock.NewMockInterface(ctrl)
-	f := FileIO{
+	f := OS{
 		readFile:  mock.ReadFile,
 		writeFile: mock.WriteFile,
 	}

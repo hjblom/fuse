@@ -1,8 +1,8 @@
-package file
+package osi
 
 import "os"
 
-//go:generate mockgen --build_flags=--mod=mod --package=file --destination=mock/file.go github.com/hjblom/fuse/internal/util/file Interface
+//go:generate mockgen --build_flags=--mod=mod --package=mock --destination=mock/os.go github.com/hjblom/fuse/internal/util/osi Interface
 
 type Interface interface {
 	Exists(path string) bool
