@@ -5,9 +5,9 @@ import (
 	"github.com/hjblom/fuse/internal/graph"
 )
 
-func Add(path, name, grp string, requires, tags []string) error {
+func Add(configPath, pkg, path string, requires, tags []string) error {
 	// Load configuration file
-	cfg, err := config.LoadConfigFile(path)
+	cfg, err := config.LoadConfigFile(configPath)
 	if err != nil {
 		return err
 	}
@@ -21,8 +21,8 @@ func Add(path, name, grp string, requires, tags []string) error {
 
 	// Add component to graph
 	cp := config.Component{
-		Name:     name,
-		Group:    grp,
+		Package:  pkg,
+		Path:     path,
 		Requires: requires,
 		Tags:     tags,
 	}
@@ -31,8 +31,9 @@ func Add(path, name, grp string, requires, tags []string) error {
 		return err
 	}
 
-	// Write config to file
+	// Add component to config
 	cfg.Components = append(cfg.Components, cp)
-	return config.WriteConfigFile(path, cfg)
 
+	// Write config to file
+	return config.WriteConfigFile(configPath, cfg)
 }

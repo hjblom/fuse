@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	group    string
+	path     string
 	requires []string
 	tags     []string
 )
@@ -27,7 +27,7 @@ var addCmd = &cobra.Command{
 			fmt.Println("please provide a component name")
 			os.Exit(1)
 		}
-		err := commands.Add(DefaultConfigPath, args[0], group, requires, tags)
+		err := commands.Add(DefaultConfigPath, args[0], path, requires, tags)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -37,7 +37,7 @@ var addCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(addCmd)
-	addCmd.Flags().StringVarP(&group, "group", "g", "internal", "Where the component should be placed")
+	addCmd.Flags().StringVarP(&path, "path", "p", "internal", "Where the component should be placed")
 	addCmd.Flags().StringSliceVarP(&requires, "requires", "r", []string{}, "List of components this component depends on")
 	addCmd.Flags().StringSliceVarP(&tags, "tag", "t", []string{}, "List of tags for this component")
 }
