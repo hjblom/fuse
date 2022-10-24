@@ -5,14 +5,22 @@ import (
 
 	"github.com/dave/jennifer/jen"
 	"github.com/hjblom/fuse/internal/config"
-	"github.com/hjblom/fuse/internal/util/file"
+	"github.com/hjblom/fuse/internal/util/osi"
 )
 
 const InterfaceFileName = "interface.go"
 
-func GenerateInterface(module string, com config.Component, file file.Interface) error {
+type InterfaceGenerator struct {
+	os osi.Interface
+}
+
+func NewInterfaceGenerator(os osi.Interface) Interface {
+	return &InterfaceGenerator{os: os}
+}
+
+func (g *InterfaceGenerator) Generate(module string, com config.Component) error {
 	path := fmt.Sprintf("%s/%s/%s", com.Path, com.Package, InterfaceFileName)
-	if file.Exists(path) {
+	if g.os.Exists(path) {
 		return nil
 	}
 
@@ -32,7 +40,7 @@ func GenerateInterface(module string, com config.Component, file file.Interface)
 
 	// Write file
 	c := fmt.Sprintf("%#v", j)
-	err := file.WriteFile(path, []byte(c), 0644)
+	err := g.os.WriteFile(path, []byte(c), 0644)
 	if err != nil {
 		return fmt.Errorf("failed to write interface file: %w", err)
 	}
