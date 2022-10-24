@@ -14,14 +14,14 @@ func Add(configPath, pkg, path string, requires, tags []string) error {
 
 	// Load config into graph - this will validate the config
 	g := graph.NewGraph()
-	err = g.AddComponents(cfg.Components)
+	err = g.AddComponents(cfg.Packages)
 	if err != nil {
 		return err
 	}
 
 	// Add component to graph
-	cp := config.Component{
-		Package:  pkg,
+	cp := config.Package{
+		Name:     pkg,
 		Path:     path,
 		Requires: requires,
 		Tags:     tags,
@@ -32,7 +32,7 @@ func Add(configPath, pkg, path string, requires, tags []string) error {
 	}
 
 	// Add component to config
-	cfg.Components = append(cfg.Components, cp)
+	cfg.Packages = append(cfg.Packages, cp)
 
 	// Write config to file
 	return config.WriteConfigFile(configPath, cfg)

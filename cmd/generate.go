@@ -26,7 +26,7 @@ var generateCmd = &cobra.Command{
 
 		// Generate code
 		g := generator.NewGenerator()
-		err = g.Generate(c.Module, c.Components)
+		err = g.Generate(c.Module, c.Packages)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

@@ -1,9 +1,9 @@
-package templates
+package pkg
 
 import "github.com/hjblom/fuse/internal/config"
 
 type Interface interface {
-	Generate(module string, com config.Component) error
+	Generate(module string, pkg config.Package) error
 }
 
 func fileGeneratedDoNotEditHeader() string {

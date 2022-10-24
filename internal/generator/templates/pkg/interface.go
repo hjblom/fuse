@@ -1,4 +1,4 @@
-package templates
+package pkg
 
 import (
 	"fmt"
@@ -18,20 +18,20 @@ func NewInterfaceGenerator(os osi.Interface) Interface {
 	return &InterfaceGenerator{os: os}
 }
 
-func (g *InterfaceGenerator) Generate(module string, com config.Component) error {
-	path := fmt.Sprintf("%s/%s/%s", com.Path, com.Package, InterfaceFileName)
+func (g *InterfaceGenerator) Generate(module string, pkg config.Package) error {
+	path := fmt.Sprintf("%s/%s/%s", pkg.Path, pkg.Name, InterfaceFileName)
 	if g.os.Exists(path) {
 		return nil
 	}
 
 	// Create file
-	j := jen.NewFile(com.Package)
+	j := jen.NewFile(pkg.Name)
 
 	// Add header
 	j.PackageComment(fileGeneratedSafeEditHeader())
 
 	// Gomock comment
-	j.Comment(mockGenComment(module, com.Path, com.Package))
+	j.Comment(mockGenComment(module, pkg.Path, pkg.Name))
 
 	// Add interface
 	j.Type().Id("Interface").Interface(
