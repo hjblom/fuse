@@ -1,3 +1,3 @@
-package templates
+package pkg
 
 // TODO wiring all dependencies together

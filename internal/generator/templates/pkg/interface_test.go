@@ -1,4 +1,4 @@
-package templates
+package pkg
 
 import (
 	"testing"
@@ -17,9 +17,9 @@ func TestInterface(t *testing.T) {
 	// Given
 	mockOS := os.NewMockInterface(ctrl)
 	g := NewInterfaceGenerator(mockOS)
-	c := config.Component{
-		Package: "package",
-		Path:    "internal",
+	c := config.Package{
+		Name: "package",
+		Path: "internal",
 	}
 
 	// Expect

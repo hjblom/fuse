@@ -17,7 +17,7 @@ func Visualize(configPath string) error {
 
 	// Config to graph
 	g := graph.NewGraph()
-	err = g.AddComponents(c.Components)
+	err = g.AddComponents(c.Packages)
 	if err != nil {
 		fmt.Println("failed validating existing configuration file: ", err)
 	}

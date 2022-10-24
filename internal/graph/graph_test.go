@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var testComponentsGood = []config.Component{
+var testComponentsGood = []config.Package{
 	{
 		Name:     "Server",
 		Requires: []string{"Client"},
@@ -17,7 +17,7 @@ var testComponentsGood = []config.Component{
 	},
 }
 
-var testComponentsLoop = []config.Component{
+var testComponentsLoop = []config.Package{
 	{
 		Name:     "A",
 		Requires: []string{"B"},
@@ -28,7 +28,7 @@ var testComponentsLoop = []config.Component{
 	},
 }
 
-var testComponentsRepeated = []config.Component{
+var testComponentsRepeated = []config.Package{
 	{
 		Name: "A",
 	},
@@ -66,7 +66,7 @@ func TestAddComponentSuccess(t *testing.T) {
 	g.AddComponents(testComponentsGood)
 
 	// When
-	err := g.AddComponent(config.Component{
+	err := g.AddComponent(config.Package{
 		Name:     "Database",
 		Requires: []string{"Server"},
 	})
