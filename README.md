@@ -9,13 +9,13 @@ Fuse is a golang microservice generator.
 To install this cli, run the following command:
 
 ```bash
-go install github.com/hjblom/fuse@latest
+$: go install github.com/hjblom/fuse@latest
 ```
 
 Verify that the binary installed correctly by running the `--help` command.
 
 ```bash
-fuse --help
+$: fuse --help
 
 A go microservice generator framework.
 
@@ -25,6 +25,7 @@ Usage:
 Available Commands:
   add         Add components to the project
   completion  Generate the autocompletion script for the specified shell
+  generate    Generate code for the project based on the configuration file
   help        Help about any command
   init        Initialize a new fuse project
   visualize   Visualize the project dependency graph
@@ -44,7 +45,7 @@ Use "fuse [command] --help" for more information about a command.
 The `init` command initializes a new project. It will create a new directory with the name of the project and generate a default project structure.
 
 ```bash
-fuse init my-project
+$: fuse init my-project
 ```
 
 ### Add components
@@ -52,7 +53,7 @@ fuse init my-project
 The `add` command adds a new component to the project. It will create a new directory with the name of the component and generate a default component structure.
 
 ```bash
-fuse add client
+$: fuse add client
 ```
 
 #### Options
@@ -61,6 +62,7 @@ The `add` command has a few options that can be used to customize the component.
 
 | Option | Description |
 | --- | --- |
+| `--path` | Path to where the package should be placed |
 | `--require` | Add a requirement to the component that will be injected |
 | `--tag` | Add a tag to the component, indicating what additional methods should be generated. |
 

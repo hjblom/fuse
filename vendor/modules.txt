@@ -1,3 +1,6 @@
+# github.com/dave/jennifer v1.6.0
+## explicit; go 1.19
+github.com/dave/jennifer/jen
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew

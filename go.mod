@@ -3,6 +3,7 @@ module github.com/hjblom/fuse
 go 1.18
 
 require (
+	github.com/dave/jennifer v1.6.0
 	github.com/dominikbraun/graph v0.13.0
 	github.com/goccy/go-graphviz v0.0.9
 	github.com/golang/mock v1.6.0

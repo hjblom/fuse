@@ -27,25 +27,25 @@ func NewGraph() *Graph {
 
 func (g *Graph) AddComponents(components []config.Component) error {
 	for _, component := range components {
-		if _, ok := g.components[component.Name]; ok {
-			return fmt.Errorf("component %s already exists", component.Name)
+		if _, ok := g.components[component.Package]; ok {
+			return fmt.Errorf("component %s already exists", component.Package)
 		}
 
 		// Add component to reverse lookup map
-		g.components[component.Name] = component
+		g.components[component.Package] = component
 
 		// Add vertex to graph
-		err := g.addVertex(component.Name)
+		err := g.addVertex(component.Package)
 		if err != nil {
-			return fmt.Errorf("failed to add vertex %s: %w", component.Name, err)
+			return fmt.Errorf("failed to add vertex %s: %w", component.Package, err)
 		}
 	}
 
 	for _, component := range components {
 		for _, req := range component.Requires {
-			err := g.addEdge(req, component.Name)
+			err := g.addEdge(req, component.Package)
 			if err != nil {
-				return fmt.Errorf("failed to add edge between %s and %s: %w", component.Name, req, err)
+				return fmt.Errorf("failed to add edge between %s and %s: %w", component.Package, req, err)
 			}
 		}
 	}
@@ -54,15 +54,15 @@ func (g *Graph) AddComponents(components []config.Component) error {
 }
 
 func (g *Graph) AddComponent(component config.Component) error {
-	err := g.addVertex(component.Name)
+	err := g.addVertex(component.Package)
 	if err != nil {
-		return fmt.Errorf("failed to add vertex %s: %w", component.Name, err)
+		return fmt.Errorf("failed to add vertex %s: %w", component.Package, err)
 	}
 
 	for _, req := range component.Requires {
-		err := g.addEdge(req, component.Name)
+		err := g.addEdge(req, component.Package)
 		if err != nil {
-			return fmt.Errorf("failed to add edge between %s and %s: %w", component.Name, req, err)
+			return fmt.Errorf("failed to add edge between %s and %s: %w", component.Package, req, err)
 		}
 	}
 
@@ -101,8 +101,8 @@ func (g *Graph) ToSVG() ([]byte, error) {
 	return svg.Bytes(), nil
 }
 
-func (g *Graph) addVertex(name string) error {
-	return g.graph.AddVertex(name, defaultNodeAttributes...)
+func (g *Graph) addVertex(Package string) error {
+	return g.graph.AddVertex(Package, defaultNodeAttributes...)
 }
 
 func (g *Graph) addEdge(src, dst string) error {

@@ -13,8 +13,8 @@ type Config struct {
 }
 
 type Component struct {
-	Name     string   `yaml:"name"`
-	Group    string   `yaml:"group,omitempty"`
+	Package  string   `yaml:"package"`
+	Path     string   `yaml:"path,omitempty"`
 	Tags     []string `yaml:"tags,omitempty"`
 	Requires []string `yaml:"requires,omitempty"`
 }

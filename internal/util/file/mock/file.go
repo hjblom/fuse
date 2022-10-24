@@ -34,6 +34,34 @@ func (m *MockInterface) EXPECT() *MockInterfaceMockRecorder {
 	return m.recorder
 }
 
+// Exists mocks base method.
+func (m *MockInterface) Exists(arg0 string) bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Exists", arg0)
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// Exists indicates an expected call of Exists.
+func (mr *MockInterfaceMockRecorder) Exists(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exists", reflect.TypeOf((*MockInterface)(nil).Exists), arg0)
+}
+
+// MkdirAll mocks base method.
+func (m *MockInterface) MkdirAll(arg0 string, arg1 fs.FileMode) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "MkdirAll", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// MkdirAll indicates an expected call of MkdirAll.
+func (mr *MockInterfaceMockRecorder) MkdirAll(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MkdirAll", reflect.TypeOf((*MockInterface)(nil).MkdirAll), arg0, arg1)
+}
+
 // ReadFile mocks base method.
 func (m *MockInterface) ReadFile(arg0 string) ([]byte, error) {
 	m.ctrl.T.Helper()
