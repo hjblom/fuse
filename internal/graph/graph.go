@@ -13,39 +13,39 @@ import (
 )
 
 type Graph struct {
-	components map[string]config.Component
+	components map[string]config.Package
 	graph      graph.Graph[string, string]
 }
 
 func NewGraph() *Graph {
 	g := &Graph{
-		components: make(map[string]config.Component),
+		components: make(map[string]config.Package),
 		graph:      graph.New(graph.StringHash, graph.Directed(), graph.PreventCycles()),
 	}
 	return g
 }
 
-func (g *Graph) AddComponents(components []config.Component) error {
+func (g *Graph) AddComponents(components []config.Package) error {
 	for _, component := range components {
-		if _, ok := g.components[component.Package]; ok {
-			return fmt.Errorf("component %s already exists", component.Package)
+		if _, ok := g.components[component.Name]; ok {
+			return fmt.Errorf("component %s already exists", component.Name)
 		}
 
 		// Add component to reverse lookup map
-		g.components[component.Package] = component
+		g.components[component.Name] = component
 
 		// Add vertex to graph
-		err := g.addVertex(component.Package)
+		err := g.addVertex(component.Name)
 		if err != nil {
-			return fmt.Errorf("failed to add vertex %s: %w", component.Package, err)
+			return fmt.Errorf("failed to add vertex %s: %w", component.Name, err)
 		}
 	}
 
 	for _, component := range components {
 		for _, req := range component.Requires {
-			err := g.addEdge(req, component.Package)
+			err := g.addEdge(req, component.Name)
 			if err != nil {
-				return fmt.Errorf("failed to add edge between %s and %s: %w", component.Package, req, err)
+				return fmt.Errorf("failed to add edge between %s and %s: %w", component.Name, req, err)
 			}
 		}
 	}
@@ -53,16 +53,16 @@ func (g *Graph) AddComponents(components []config.Component) error {
 	return nil
 }
 
-func (g *Graph) AddComponent(component config.Component) error {
-	err := g.addVertex(component.Package)
+func (g *Graph) AddComponent(component config.Package) error {
+	err := g.addVertex(component.Name)
 	if err != nil {
-		return fmt.Errorf("failed to add vertex %s: %w", component.Package, err)
+		return fmt.Errorf("failed to add vertex %s: %w", component.Name, err)
 	}
 
 	for _, req := range component.Requires {
-		err := g.addEdge(req, component.Package)
+		err := g.addEdge(req, component.Name)
 		if err != nil {
-			return fmt.Errorf("failed to add edge between %s and %s: %w", component.Package, req, err)
+			return fmt.Errorf("failed to add edge between %s and %s: %w", component.Name, req, err)
 		}
 	}
 
