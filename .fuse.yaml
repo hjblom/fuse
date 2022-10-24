@@ -1,5 +1,10 @@
+module: my-service
 components:
-    - name: test
-    - name: test2
+    - name: client
+      group: internal
+    - name: server
+      group: internal
+      tags:
+        - service
       requires:
-        - test
+        - client

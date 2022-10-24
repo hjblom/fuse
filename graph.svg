@@ -9,21 +9,21 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 149)">
 <title>%1</title>
 <polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-149 112,-149 112,4 -4,4"/>
-<!-- test -->
+<!-- client -->
 <g id="node1" class="node">
-<title>test</title>
+<title>client</title>
 <polygon fill="#ffa500" stroke="#000000" points="108,-145 0,-145 0,-109 108,-109 108,-145"/>
-<text text-anchor="middle" x="54" y="-122.8" font-family="Times,serif" font-size="14.00" fill="#000000">test</text>
+<text text-anchor="middle" x="54" y="-122.8" font-family="Times,serif" font-size="14.00" fill="#000000">client</text>
 </g>
-<!-- test2 -->
+<!-- server -->
 <g id="node2" class="node">
-<title>test2</title>
+<title>server</title>
 <polygon fill="#ffa500" stroke="#000000" points="108,-36 0,-36 0,0 108,0 108,-36"/>
-<text text-anchor="middle" x="54" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">test2</text>
+<text text-anchor="middle" x="54" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">server</text>
 </g>
-<!-- test&#45;&gt;test2 -->
+<!-- client&#45;&gt;server -->
 <g id="edge1" class="edge">
-<title>test&#45;&gt;test2</title>
+<title>client&#45;&gt;server</title>
 <path fill="none" stroke="#000000" d="M54,-108.5096C54,-91.4952 54,-66.0055 54,-46.4076"/>
 <polygon fill="#000000" stroke="#000000" points="57.5001,-46.2173 54,-36.2173 50.5001,-46.2173 57.5001,-46.2173"/>
 </g>
