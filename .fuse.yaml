@@ -1,9 +1,9 @@
 module: my-service
 components:
-    - name: client
-      group: internal
-    - name: server
-      group: internal
+    - package: client
+      path: internal
+    - package: server
+      path: internal/services
       tags:
         - service
       requires:
