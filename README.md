@@ -9,7 +9,7 @@ Fuse is a golang microservice generator.
 To install this cli, run the following command:
 
 ```bash
-go install github.com/hjblom/fuse
+go install github.com/hjblom/fuse@latest
 ```
 
 Verify that the binary installed correctly by running the `--help` command.

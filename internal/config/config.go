@@ -8,12 +8,13 @@ import (
 )
 
 type Config struct {
+	Module     string      `yaml:"module"`
 	Components []Component `yaml:"components"`
 }
 
 type Component struct {
 	Name     string   `yaml:"name"`
-	Package  string   `yaml:"package,omitempty"`
+	Group    string   `yaml:"group,omitempty"`
 	Tags     []string `yaml:"tags,omitempty"`
 	Requires []string `yaml:"requires,omitempty"`
 }
