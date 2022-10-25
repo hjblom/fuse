@@ -14,16 +14,20 @@ type Generator struct {
 }
 
 func NewGenerator() *Generator {
+	os := osi.NewOS()
 	return &Generator{
-		os: osi.NewOS(),
+		os: os,
 		pkgTemplates: map[string]pkg.Interface{
-			"interface": pkg.NewInterfaceGenerator(osi.NewOS()),
+			"interface": pkg.NewInterfaceGenerator(os),
+			"config":    pkg.NewConfigGenerator(os),
 		},
 	}
 }
 
 func (g *Generator) Generate(module string, sorted []config.Package) error {
 	for _, component := range sorted {
+		fmt.Println("generating component: ", component.Name)
+
 		// Ensure directory exists
 		p := fmt.Sprintf("%s/%s", component.Path, component.Name)
 		err := g.os.MkdirAll(p, 0755)
@@ -32,9 +36,11 @@ func (g *Generator) Generate(module string, sorted []config.Package) error {
 		}
 
 		// Run generators on directory
-		for _, pkg := range g.pkgTemplates {
+		for name, pkg := range g.pkgTemplates {
+			fmt.Println("generating file ", name)
 			err := pkg.Generate(module, component)
 			if err != nil {
+				fmt.Printf("failed to generate file: %v", err)
 				return err
 			}
 		}
