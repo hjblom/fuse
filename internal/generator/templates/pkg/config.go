@@ -20,7 +20,6 @@ func NewConfigGenerator(os osi.Interface) Interface {
 
 func (g *ConfigGenerator) Generate(module string, pkg config.Package) error {
 	path := fmt.Sprintf("%s/%s/%s", pkg.Path, pkg.Name, ConfigFileName)
-	fmt.Println("generating config file at path: ", path)
 	if g.os.Exists(path) {
 		return nil
 	}
@@ -29,7 +28,7 @@ func (g *ConfigGenerator) Generate(module string, pkg config.Package) error {
 	j := jen.NewFile(pkg.Name)
 
 	// Add header
-	j.PackageComment(fileGeneratedSafeEditHeader())
+	j.PackageComment(Header)
 
 	// Add config struct
 	j.Type().Id("Config").Struct(
