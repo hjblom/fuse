@@ -4,7 +4,7 @@ generate:
 
 .PHONY: test
 test:
-	go test -v ./...
+	go test ./internal/... -cover -race -mod=vendor -v
 
 .PHONY: install
 install:
