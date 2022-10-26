@@ -28,7 +28,7 @@ func (g *InterfaceGenerator) Generate(module string, pkg config.Package) error {
 	j := jen.NewFile(pkg.Name)
 
 	// Add header
-	j.PackageComment(fileGeneratedSafeEditHeader())
+	j.PackageComment(Header)
 
 	// Gomock comment
 	j.Comment(mockGenComment(module, pkg.Path, pkg.Name))
