@@ -25,7 +25,7 @@ func NewGenerator() *Generator {
 	}
 }
 
-func (g *Generator) Generate(module string, sorted []config.Package) error {
+func (g *Generator) Generate(module string, sorted []*config.Package) error {
 	for _, pkg := range sorted {
 		// Ensure directory exists
 		p := fmt.Sprintf("%s/%s", pkg.Path, pkg.Name)
@@ -36,7 +36,7 @@ func (g *Generator) Generate(module string, sorted []config.Package) error {
 
 		// Run generators on directory
 		for _, tpl := range g.pkgTemplates {
-			err := tpl.Generate(module, pkg)
+			err := tpl.Generate(module, *pkg)
 			if err != nil {
 				return fmt.Errorf("failed to generate file: %v", err)
 			}

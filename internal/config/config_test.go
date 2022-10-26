@@ -10,25 +10,16 @@ import (
 )
 
 var testConfig = `
+module: my-service
 components:
-  - name: Server
-    tags:
-      - service
-    requires:
-      - Client
-      - Client2
-  - name: Client
-    requires:
-      - ConfigManager
-      - ConfigManager2
-  - name: ConfigManager
-  - name: ConfigManager2
-  - name: Client2
-    requires:
-     - ConfigManager2
-  - name: Logger
-    tags:
-     - singleton
+    - package: client
+      path: internal
+    - package: server
+      path: internal/services
+      tags:
+        - service
+      requires:
+        - client
 `
 
 func TestConfigParse(t *testing.T) {
