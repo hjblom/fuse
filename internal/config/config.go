@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -17,6 +18,21 @@ type Package struct {
 	Path     string   `yaml:"path,omitempty"`
 	Tags     []string `yaml:"tags,omitempty"`
 	Requires []string `yaml:"requires,omitempty"`
+}
+
+func (p *Package) FullPath() string {
+	return fmt.Sprintf("%s/%s", p.Path, p.Name)
+}
+
+func (p *Package) GoPackageName() string {
+	return strings.ToUpper(p.Name[0:1]) + string(p.Name[1:])
+}
+
+func (p *Package) Validate() error {
+	if p.Name == "" {
+		return fmt.Errorf("package name is required")
+	}
+	return nil
 }
 
 func LoadConfigFile(path string) (*Config, error) {
