@@ -18,8 +18,8 @@ func NewConfigGenerator(os osi.Interface) Interface {
 	return &ConfigGenerator{os: os}
 }
 
-func (g *ConfigGenerator) Generate(module string, pkg config.Package) error {
-	path := fmt.Sprintf("%s/%s/%s", pkg.Path, pkg.Name, ConfigFileName)
+func (g *ConfigGenerator) Generate(pkg *config.Package) error {
+	path := fmt.Sprintf("%s/%s", pkg.RelativePath(), ConfigFileName)
 	if g.os.Exists(path) {
 		return nil
 	}
