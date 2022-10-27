@@ -1,9 +1,12 @@
 package commands
 
-import "github.com/hjblom/fuse/internal/config"
+import (
+	"os"
 
-func Init(module, configPath string) error {
-	c := config.NewConfig()
-	c.Module = module
-	return c.Write(configPath)
+	"github.com/hjblom/fuse/internal/config"
+)
+
+func Init(modulePath, configPath string) error {
+	c := config.NewConfig(modulePath)
+	return config.WriteConfig(c, configPath, os.WriteFile)
 }

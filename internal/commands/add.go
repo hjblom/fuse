@@ -1,25 +1,22 @@
 package commands
 
 import (
+	"os"
+
 	"github.com/hjblom/fuse/internal/config"
 )
 
-func Add(configPath, packageName, path string, requires, tags []string) error {
-	c := config.NewConfig()
-
+func Add(configPath, packageName, packagePath string, requires, tags []string) error {
 	// Read config file
-	err := c.Read(configPath)
-	if err != nil {
-		return err
-	}
+	c, err := config.ReadConfig(configPath, os.ReadFile)
 
 	// Add package to config file
-	pkg := config.NewPackage(packageName, path, requires, tags)
-	err = c.AddPackage(pkg)
+	pkg := config.NewPackage(packageName, packagePath, requires, tags)
+	err = c.Module.AddPackage(pkg)
 	if err != nil {
 		return err
 	}
 
 	// Write config to file
-	return c.Write(configPath)
+	return config.WriteConfig(c, configPath, os.WriteFile)
 }

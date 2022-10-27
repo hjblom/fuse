@@ -20,11 +20,11 @@ var (
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
-	Use:   "add",
+	Use:   "add [package name]",
 	Short: "Add packages to the project",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {
-			fmt.Println("please provide a component name")
+			fmt.Println("please provide a package name")
 			os.Exit(1)
 		}
 		err := commands.Add(DefaultConfigPath, args[0], path, requires, tags)
@@ -37,7 +37,7 @@ var addCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(addCmd)
-	addCmd.Flags().StringVarP(&path, "path", "p", "internal", "Where the component should be placed")
-	addCmd.Flags().StringSliceVarP(&requires, "requires", "r", []string{}, "List of components this component depends on")
-	addCmd.Flags().StringSliceVarP(&tags, "tag", "t", []string{}, "List of tags for this component")
+	addCmd.Flags().StringVarP(&path, "path", "p", "internal", "Where the package should be placed")
+	addCmd.Flags().StringSliceVarP(&requires, "requires", "r", []string{}, "List of packages this package depends on")
+	addCmd.Flags().StringSliceVarP(&tags, "tag", "t", []string{}, "List of tags for this package")
 }

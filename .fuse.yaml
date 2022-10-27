@@ -1,10 +1,14 @@
-module: my-service
-components:
-    - package: client
+module:
+  path: path
+  packages:
+    - name: client
       path: internal
-    - package: server
+      tags:
+        - config
+    - name: server
       path: internal/services
       tags:
+        - config
         - service
       requires:
-        - client
+        - internal/client

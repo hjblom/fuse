@@ -8,83 +8,12 @@ github.com/davecgh/go-spew/spew
 ## explicit; go 1.18
 github.com/dominikbraun/graph
 github.com/dominikbraun/graph/draw
-# github.com/fogleman/gg v1.3.0
-## explicit
-github.com/fogleman/gg
-# github.com/goccy/go-graphviz v0.0.9
-## explicit; go 1.12
-github.com/goccy/go-graphviz
-github.com/goccy/go-graphviz/cdt
-github.com/goccy/go-graphviz/cgraph
-github.com/goccy/go-graphviz/gvc
-github.com/goccy/go-graphviz/internal
-github.com/goccy/go-graphviz/internal/ccall
-github.com/goccy/go-graphviz/internal/ccall/ast
-github.com/goccy/go-graphviz/internal/ccall/cdt
-github.com/goccy/go-graphviz/internal/ccall/cgraph
-github.com/goccy/go-graphviz/internal/ccall/circogen
-github.com/goccy/go-graphviz/internal/ccall/common
-github.com/goccy/go-graphviz/internal/ccall/dotgen
-github.com/goccy/go-graphviz/internal/ccall/edgepaint
-github.com/goccy/go-graphviz/internal/ccall/expr
-github.com/goccy/go-graphviz/internal/ccall/fdpgen
-github.com/goccy/go-graphviz/internal/ccall/glcomp
-github.com/goccy/go-graphviz/internal/ccall/gvc
-github.com/goccy/go-graphviz/internal/ccall/gvpr
-github.com/goccy/go-graphviz/internal/ccall/ingraphs
-github.com/goccy/go-graphviz/internal/ccall/label
-github.com/goccy/go-graphviz/internal/ccall/mingle
-github.com/goccy/go-graphviz/internal/ccall/neatogen
-github.com/goccy/go-graphviz/internal/ccall/ortho
-github.com/goccy/go-graphviz/internal/ccall/osage
-github.com/goccy/go-graphviz/internal/ccall/pack
-github.com/goccy/go-graphviz/internal/ccall/patchwork
-github.com/goccy/go-graphviz/internal/ccall/pathplan
-github.com/goccy/go-graphviz/internal/ccall/rbtree
-github.com/goccy/go-graphviz/internal/ccall/sfdpgen
-github.com/goccy/go-graphviz/internal/ccall/sfio
-github.com/goccy/go-graphviz/internal/ccall/sfio/Sfio_f
-github.com/goccy/go-graphviz/internal/ccall/sparse
-github.com/goccy/go-graphviz/internal/ccall/spine
-github.com/goccy/go-graphviz/internal/ccall/topfish
-github.com/goccy/go-graphviz/internal/ccall/twopigen
-github.com/goccy/go-graphviz/internal/ccall/vmalloc
-github.com/goccy/go-graphviz/internal/ccall/vpsc
-github.com/goccy/go-graphviz/internal/ccall/vpsc/pairingheap
-github.com/goccy/go-graphviz/internal/ccall/xdot
-github.com/goccy/go-graphviz/internal/expat
-github.com/goccy/go-graphviz/internal/plugin/core
-github.com/goccy/go-graphviz/internal/plugin/devil
-github.com/goccy/go-graphviz/internal/plugin/dot_layout
-github.com/goccy/go-graphviz/internal/plugin/gd
-github.com/goccy/go-graphviz/internal/plugin/gdiplus
-github.com/goccy/go-graphviz/internal/plugin/gdk
-github.com/goccy/go-graphviz/internal/plugin/glitz
-github.com/goccy/go-graphviz/internal/plugin/gs
-github.com/goccy/go-graphviz/internal/plugin/gtk
-github.com/goccy/go-graphviz/internal/plugin/lasi
-github.com/goccy/go-graphviz/internal/plugin/ming
-github.com/goccy/go-graphviz/internal/plugin/neato_layout
-github.com/goccy/go-graphviz/internal/plugin/pango
-github.com/goccy/go-graphviz/internal/plugin/poppler
-github.com/goccy/go-graphviz/internal/plugin/quartz
-github.com/goccy/go-graphviz/internal/plugin/rsvg
-github.com/goccy/go-graphviz/internal/plugin/visio
-github.com/goccy/go-graphviz/internal/plugin/webp
-github.com/goccy/go-graphviz/internal/plugin/xlib
-# github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
-## explicit
-github.com/golang/freetype/raster
-github.com/golang/freetype/truetype
 # github.com/golang/mock v1.6.0
 ## explicit; go 1.11
 github.com/golang/mock/gomock
 # github.com/inconshreveable/mousetrap v1.0.0
 ## explicit
 github.com/inconshreveable/mousetrap
-# github.com/pkg/errors v0.9.1
-## explicit
-github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
@@ -97,14 +26,6 @@ github.com/spf13/pflag
 # github.com/stretchr/testify v1.8.0
 ## explicit; go 1.13
 github.com/stretchr/testify/assert
-# golang.org/x/image v0.0.0-20200119044424-58c23975cae1
-## explicit; go 1.12
-golang.org/x/image/draw
-golang.org/x/image/font
-golang.org/x/image/font/basicfont
-golang.org/x/image/font/gofont/goregular
-golang.org/x/image/math/f64
-golang.org/x/image/math/fixed
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
