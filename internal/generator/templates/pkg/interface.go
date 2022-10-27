@@ -18,7 +18,7 @@ func NewInterfaceGenerator(os osi.Interface) Interface {
 	return &InterfaceGenerator{os: os}
 }
 
-func (g *InterfaceGenerator) Generate(module string, pkg config.Package) error {
+func (g *InterfaceGenerator) Generate(pkg *config.Package) error {
 	path := fmt.Sprintf("%s/%s/%s", pkg.Path, pkg.Name, InterfaceFileName)
 	if g.os.Exists(path) {
 		return nil
@@ -31,7 +31,7 @@ func (g *InterfaceGenerator) Generate(module string, pkg config.Package) error {
 	j.PackageComment(Header)
 
 	// Gomock comment
-	j.Comment(mockGenComment(module, pkg.Path, pkg.Name))
+	j.Comment(mockGenComment(pkg.ModuleName(), pkg.Path, pkg.Name))
 
 	// Add interface
 	j.Type().Id("Interface").Interface(

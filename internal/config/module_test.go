@@ -11,7 +11,7 @@ import (
 
 var testConfig = `
 module: my-service
-components:
+packages:
     - package: client
       path: internal
     - package: server
@@ -23,7 +23,7 @@ components:
 `
 
 func TestConfigParse(t *testing.T) {
-	c := Config{}
+	c := Module{}
 	err := yaml.Unmarshal([]byte(testConfig), &c)
 	if err != nil {
 		t.Errorf("failed to unmarshal config: %v", err)
