@@ -1,30 +1,32 @@
 package commands
 
+import (
+	"fmt"
+	"os"
+
+	"github.com/hjblom/fuse/internal/config"
+	"github.com/hjblom/fuse/internal/util"
+)
+
 func Visualize(configPath string) error {
+	fi := util.NewFile()
+
 	// Parse config file
-	// c, err := config.LoadConfigFile(configPath)
-	// if err != nil {
-	// 	fmt.Println("failed to read configuration file: ", err)
-	// }
+	c, err := config.ReadConfig(configPath, fi)
+	if err != nil {
+		fmt.Println("failed to read configuration file: ", err)
+	}
 
-	// // Config to graph
-	// g := graph.NewGraph()
-	// err = g.AddPackages(c.Packages)
-	// if err != nil {
-	// 	fmt.Println("failed validating existing configuration file: ", err)
-	// }
+	svg, err := c.Module.ToSVG()
+	if err != nil {
+		fmt.Println("failed to generate SVG: ", err)
+	}
 
-	// // Convert graph to dot
-	// svg, err := g.ToSVG()
-	// if err != nil {
-	// 	fmt.Println("failed to convert graph to dot: ", err)
-	// }
-
-	// // Write svg to file
-	// err = os.WriteFile("graph.svg", svg, 0644)
-	// if err != nil {
-	// 	fmt.Println("failed to write svg to file: ", err)
-	// }
+	// Write svg to file
+	err = os.WriteFile("graph.svg", svg, 0644)
+	if err != nil {
+		fmt.Println("failed to write svg to file: ", err)
+	}
 
 	return nil
 }
