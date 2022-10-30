@@ -39,11 +39,11 @@ func (c *Module) Validate() error {
 	// If the graph has been populated, assume validation has been done.
 	if c.graph != nil {
 		return nil
-	} else {
-		// Else populate the graph and validate it.
-		c.packages = make(map[string]*Package)
-		c.graph = graph.New(graph.StringHash, graph.Directed(), graph.PreventCycles())
 	}
+
+	// Create instance of graph and packages
+	c.packages = make(map[string]*Package)
+	c.graph = graph.New(graph.StringHash, graph.Directed(), graph.PreventCycles())
 
 	// Validate module name
 	if c.Path == "" {
