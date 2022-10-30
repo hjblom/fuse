@@ -31,7 +31,7 @@ func (g *InterfaceGenerator) Generate(pkg *config.Package) error {
 	j.PackageComment(Header)
 
 	// Gomock comment
-	j.Comment(mockGenComment(pkg.ModuleName(), pkg.Path, pkg.Name))
+	// j.Comment(mockGenComment(pkg.ModuleName(), pkg.Path, pkg.Name))
 
 	// Add interface
 	j.Type().Id("Interface").Interface(
