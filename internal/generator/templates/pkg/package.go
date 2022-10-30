@@ -5,22 +5,22 @@ import (
 
 	"github.com/dave/jennifer/jen"
 	"github.com/hjblom/fuse/internal/config"
-	"github.com/hjblom/fuse/internal/util/osi"
+	"github.com/hjblom/fuse/internal/util"
 )
 
 const PackageFileName = "package.go"
 
 type PackageGenerator struct {
-	os osi.Interface
+	fi util.FileInterface
 }
 
-func NewPackageGenerator(os osi.Interface) Interface {
-	return &PackageGenerator{os: os}
+func NewPackageGenerator(fi util.FileInterface) Interface {
+	return &PackageGenerator{fi: fi}
 }
 
 func (g *PackageGenerator) Generate(pkg *config.Package) error {
 	path := fmt.Sprintf("%s/%s", pkg.RelativePath(), PackageFileName)
-	if g.os.Exists(path) {
+	if g.fi.Exists(path) {
 		return nil
 	}
 	pkgName := pkg.GoPackageName()
@@ -61,7 +61,7 @@ func (g *PackageGenerator) Generate(pkg *config.Package) error {
 
 	// Write file
 	c := fmt.Sprintf("%#v", j)
-	err := g.os.WriteFile(path, []byte(c), 0644)
+	err := g.fi.Write(path, []byte(c), 0644)
 	if err != nil {
 		return fmt.Errorf("failed to write package file: %w", err)
 	}

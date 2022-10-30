@@ -5,22 +5,22 @@ import (
 
 	"github.com/dave/jennifer/jen"
 	"github.com/hjblom/fuse/internal/config"
-	"github.com/hjblom/fuse/internal/util/osi"
+	"github.com/hjblom/fuse/internal/util"
 )
 
 const ConfigFileName = "config.go"
 
 type ConfigGenerator struct {
-	os osi.Interface
+	file util.FileInterface
 }
 
-func NewConfigGenerator(os osi.Interface) Interface {
-	return &ConfigGenerator{os: os}
+func NewConfigGenerator(file util.FileInterface) Interface {
+	return &ConfigGenerator{file: file}
 }
 
 func (g *ConfigGenerator) Generate(pkg *config.Package) error {
 	path := fmt.Sprintf("%s/%s", pkg.RelativePath(), ConfigFileName)
-	if g.os.Exists(path) {
+	if g.file.Exists(path) {
 		return nil
 	}
 
@@ -37,7 +37,7 @@ func (g *ConfigGenerator) Generate(pkg *config.Package) error {
 
 	// Write file
 	c := fmt.Sprintf("%#v", j)
-	err := g.os.WriteFile(path, []byte(c), 0644)
+	err := g.file.Write(path, []byte(c), 0644)
 	if err != nil {
 		return fmt.Errorf("failed to write config file: %w", err)
 	}

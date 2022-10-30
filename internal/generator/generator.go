@@ -5,22 +5,22 @@ import (
 
 	"github.com/hjblom/fuse/internal/config"
 	"github.com/hjblom/fuse/internal/generator/templates/pkg"
-	"github.com/hjblom/fuse/internal/util/osi"
+	"github.com/hjblom/fuse/internal/util"
 )
 
 type Generator struct {
-	os           osi.Interface
+	fi           util.FileInterface
 	pkgTemplates map[string]pkg.Interface
 }
 
 func NewGenerator() *Generator {
-	os := osi.NewOS()
+	fi := util.NewFile()
 	return &Generator{
-		os: os,
+		fi: fi,
 		pkgTemplates: map[string]pkg.Interface{
-			"interface": pkg.NewInterfaceGenerator(os),
-			"config":    pkg.NewConfigGenerator(os),
-			"package":   pkg.NewPackageGenerator(os),
+			"interface": pkg.NewInterfaceGenerator(fi),
+			"config":    pkg.NewConfigGenerator(fi),
+			"package":   pkg.NewPackageGenerator(fi),
 		},
 	}
 }
@@ -29,7 +29,7 @@ func (g *Generator) Generate(module *config.Module) error {
 	for _, pkg := range module.Packages {
 		// Ensure directory exists
 		p := fmt.Sprintf("%s/%s", pkg.Path, pkg.Name)
-		err := g.os.MkdirAll(p, 0755)
+		err := g.fi.Mkdir(p, 0755)
 		if err != nil {
 			return fmt.Errorf("failed to create directory: %w", err)
 		}
