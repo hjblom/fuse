@@ -3,6 +3,8 @@ package config
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"os/exec"
 
 	"github.com/dominikbraun/graph"
 	"github.com/dominikbraun/graph/draw"
@@ -84,8 +86,8 @@ func (c *Module) AddPackage(pkg *Package) error {
 	// Add vertex to graph
 	err := c.graph.AddVertex(pkg.RelativePath(), defaultNodeAttributes...)
 	if err != nil {
-		delete(c.packages, pkg.RelativePath())
-		return fmt.Errorf("failed to add vertex %s: %w", pkg.RelativePath(), err)
+		delete(c.packages, pkg.Name)
+		return fmt.Errorf("failed to add vertex %s: %w", pkg.Name, err)
 	}
 
 	// Add edges to graph
@@ -135,6 +137,38 @@ func (c *Module) ToDOT() ([]byte, error) {
 		return nil, fmt.Errorf("failed to convert graph to DOT: %w", err)
 	}
 	return dot.Bytes(), nil
+}
+
+// ToSVG attempts to convert the module's graph to SVG using the dot command.
+// ToSVG's logic is based on https://github.com/google/pprof/blob/main/internal/driver/webui.go#L336
+func (c *Module) ToSVG() ([]byte, error) {
+	// Ensure that the graph has been validated
+	if err := c.Validate(); err != nil {
+		return nil, err
+	}
+
+	// Convert graph to DOT
+	dot, err := c.ToDOT()
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert DOT to SVG using dot command
+	cmd := exec.Command("dot", "-Tsvg")
+	svg := &bytes.Buffer{}
+	cmd.Stdin = bytes.NewReader(dot)
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = svg
+	err = cmd.Start()
+	if err != nil {
+		return nil, fmt.Errorf("dot program failed to execute: %w", err)
+	}
+	err = cmd.Wait()
+	if err != nil {
+		return nil, fmt.Errorf("dot program failed to execute: %w", err)
+	}
+
+	return svg.Bytes(), nil
 }
 
 var defaultNodeAttributes = []func(*graph.VertexProperties){
