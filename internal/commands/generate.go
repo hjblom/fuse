@@ -1,15 +1,16 @@
 package commands
 
 import (
-	"os"
-
 	"github.com/hjblom/fuse/internal/config"
 	"github.com/hjblom/fuse/internal/generator"
+	"github.com/hjblom/fuse/internal/util"
 )
 
 func Generate(configPath string) error {
+	fi := util.NewFile()
+
 	// Read configuration file
-	c, err := config.ReadConfig(configPath, os.ReadFile)
+	c, err := config.ReadConfig(configPath, fi)
 	if err != nil {
 		return err
 	}
@@ -28,5 +29,5 @@ func Generate(configPath string) error {
 	}
 
 	// Write config
-	return config.WriteConfig(c, configPath, os.WriteFile)
+	return config.WriteConfig(c, configPath, fi)
 }

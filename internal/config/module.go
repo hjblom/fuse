@@ -8,18 +8,6 @@ import (
 	"github.com/dominikbraun/graph/draw"
 )
 
-var defaultNodeAttributes = []func(*graph.VertexProperties){
-	graph.VertexAttribute("style", "filled"),
-	graph.VertexAttribute("shape", "box"),
-	graph.VertexAttribute("fillcolor", "orange"),
-	graph.VertexAttribute("width", "1.5"),
-	graph.VertexAttribute("height", "0.5"),
-}
-
-var defaultEdgeAttributes = []func(*graph.EdgeProperties){
-	graph.EdgeAttribute("minlen", "2"),
-}
-
 type Module struct {
 	Path     string     `yaml:"path"`
 	Packages []*Package `yaml:"packages"`
@@ -147,4 +135,16 @@ func (c *Module) ToDOT() ([]byte, error) {
 		return nil, fmt.Errorf("failed to convert graph to DOT: %w", err)
 	}
 	return dot.Bytes(), nil
+}
+
+var defaultNodeAttributes = []func(*graph.VertexProperties){
+	graph.VertexAttribute("style", "filled"),
+	graph.VertexAttribute("shape", "box"),
+	graph.VertexAttribute("fillcolor", "orange"),
+	graph.VertexAttribute("width", "1.5"),
+	graph.VertexAttribute("height", "0.5"),
+}
+
+var defaultEdgeAttributes = []func(*graph.EdgeProperties){
+	graph.EdgeAttribute("minlen", "2"),
 }

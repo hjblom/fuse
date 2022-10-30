@@ -18,9 +18,9 @@ func NewConfig(modulePath string) *Config {
 	}
 }
 
-func ReadConfig(path string, read util.Reader) (*Config, error) {
+func ReadConfig(path string, fi util.FileInterface) (*Config, error) {
 	// Read file
-	data, err := read(path)
+	data, err := fi.Read(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config file: %w", err)
 	}
@@ -35,7 +35,7 @@ func ReadConfig(path string, read util.Reader) (*Config, error) {
 	return c, nil
 }
 
-func WriteConfig(c *Config, path string, write util.Writer) error {
+func WriteConfig(c *Config, path string, fi util.FileInterface) error {
 	// Setup YAML encoder
 	data := &bytes.Buffer{}
 	enc := yaml.NewEncoder(data)
@@ -49,7 +49,7 @@ func WriteConfig(c *Config, path string, write util.Writer) error {
 	}
 
 	// Write file
-	err = write(path, data.Bytes(), 0644)
+	err = fi.Write(path, data.Bytes(), 0644)
 	if err != nil {
 		return fmt.Errorf("failed to write config file: %w", err)
 	}
