@@ -1,14 +1,9 @@
 module:
   path: path
   packages:
-    - name: client
+    - package: client
       path: internal
-      tags:
-        - config
-    - name: server
+    - package: server
       path: internal/services
-      tags:
-        - config
-        - service
       requires:
         - internal/client

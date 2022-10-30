@@ -23,7 +23,7 @@ Usage:
   fuse [command]
 
 Available Commands:
-  add         Add components to the project
+  add         Add packages to the project
   completion  Generate the autocompletion script for the specified shell
   generate    Generate code for the project based on the configuration file
   help        Help about any command
