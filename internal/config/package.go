@@ -22,8 +22,8 @@ func NewPackage(name, path string, requires, tags []string) *Package {
 }
 
 // FullPath returns the full path (including module path) to the package.
-func (p *Package) FullPath() string {
-	return fmt.Sprintf("%s/%s", p.Path, p.Name)
+func (p *Package) FullPath(modPath string) string {
+	return fmt.Sprintf("%s/%s/%s", modPath, p.Path, p.Name)
 }
 
 // RelativePath returns the relative path from the module root to the package.
@@ -47,4 +47,13 @@ func (p *Package) Validate() error {
 		return fmt.Errorf("package name is required")
 	}
 	return nil
+}
+
+func (p *Package) HasTag(tag string) bool {
+	for _, t := range p.Tags {
+		if t == tag {
+			return true
+		}
+	}
+	return false
 }
