@@ -171,6 +171,19 @@ func (c *Module) ToSVG() ([]byte, error) {
 	return svg.Bytes(), nil
 }
 
+func (c *Module) GetPackage(pkgName string) *Package {
+	// Ensure that the graph has been validated
+	if err := c.Validate(); err != nil {
+		return nil
+	}
+
+	pkg, ok := c.packages[pkgName]
+	if !ok {
+		return nil
+	}
+	return pkg
+}
+
 var defaultNodeAttributes = []func(*graph.VertexProperties){
 	graph.VertexAttribute("style", "filled"),
 	graph.VertexAttribute("shape", "box"),

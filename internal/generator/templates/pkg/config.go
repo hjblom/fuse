@@ -9,6 +9,7 @@ import (
 )
 
 const ConfigFileName = "config.go"
+const ConfigTag = "config"
 
 type ConfigGenerator struct {
 	file util.FileInterface
@@ -21,6 +22,11 @@ func NewConfigGenerator(file util.FileInterface) Interface {
 func (g *ConfigGenerator) Generate(mod *config.Module, pkg *config.Package) error {
 	path := fmt.Sprintf("%s/%s", pkg.RelativePath(), ConfigFileName)
 	if g.file.Exists(path) {
+		return nil
+	}
+
+	// Determine if config should be generated
+	if !pkg.HasTag(ConfigTag) {
 		return nil
 	}
 
