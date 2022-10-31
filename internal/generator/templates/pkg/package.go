@@ -29,32 +29,45 @@ func (g *PackageGenerator) Generate(mod *config.Module, pkg *config.Package) err
 	// Add header
 	j.PackageComment(DoNotEditHeader)
 
+	// Build injections
+	injections := []jen.Code{}
+	injectionMap := jen.Dict{}
+	// Add optional config injection
+	if pkg.HasTag(ConfigTag) {
+		injections = append(injections, jen.Id("cfg").Op("*").Id("Config"))
+		injectionMap[jen.Id("cfg")] = jen.Id("cfg")
+	}
+	// Loop through required struct injections
+	for _, req := range pkg.Requires {
+		reqPkg := mod.GetPackage(req)
+		injections = append(injections, jen.Id(reqPkg.Name).Qual(reqPkg.FullPath(mod.Path), "Interface"))
+		injectionMap[jen.Id(reqPkg.Name)] = jen.Id(reqPkg.Name)
+	}
+
 	/*
 		// Struct
-		type PackageName struct {
-			cfg Config
+		type <PackageName> struct {
+			cfg *Config
 			Injections
 		}
 	*/
 	j.Type().Id(pkgName).Struct(
-		jen.Id("cfg").Id("Config"),
-		// TODO: Add injections
+		injections...,
 	)
 
 	/*
 		// Constructor
-		func NewPackageName(cfg Config) *PackageName {
-			return &PackageName{cfg: cfg}
+		func New<PackageName>(cfg Config, injections...) *<PackageName> {
+			return &PackageName{
+				cfg: cfg,
+				injections...
+			}
 		}
 	*/
 	j.Func().Id("New" + pkgName).Params(
-		jen.Id("cfg").Id("Config"),
+		injections...,
 	).Id("Interface").Block(
-		jen.Return(jen.Op("&").Id(pkgName).Values(
-			jen.Dict{
-				jen.Id("cfg"): jen.Id("cfg"),
-			},
-		)),
+		jen.Return(jen.Op("&").Id(pkgName).Values(injectionMap)),
 	)
 
 	// Write file
