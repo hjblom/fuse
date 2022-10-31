@@ -5,7 +5,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/hjblom/fuse/internal/config"
-	os "github.com/hjblom/fuse/internal/util/osi/mock"
+	"github.com/hjblom/fuse/internal/util/mock"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,19 +15,25 @@ func TestInterface(t *testing.T) {
 	defer ctrl.Finish()
 
 	// Given
-	mockOS := os.NewMockInterface(ctrl)
-	g := NewInterfaceGenerator(mockOS)
-	c := config.Package{
+	mfi := mock.NewMockFileInterface(ctrl)
+	g := NewInterfaceGenerator(mfi)
+	pkg := &config.Package{
 		Name: "package",
 		Path: "internal",
 	}
+	mod := &config.Module{
+		Path: "test",
+		Packages: []*config.Package{
+			pkg,
+		},
+	}
 
 	// Expect
-	mockOS.EXPECT().Exists(gomock.Any()).Return(false).Times(1)
-	mockOS.EXPECT().WriteFile("internal/package/interface.go", gomock.Any(), gomock.Any()).Return(nil).Times(1)
+	mfi.EXPECT().Exists(gomock.Any()).Return(false).Times(1)
+	mfi.EXPECT().Write("internal/package/interface.go", gomock.Any(), gomock.Any()).Return(nil).Times(1)
 
 	// When
-	err := g.Generate("test", c)
+	err := g.Generate(mod, pkg)
 
 	// Then
 	assert.NoError(t, err)

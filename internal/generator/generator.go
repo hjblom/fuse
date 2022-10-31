@@ -13,7 +13,7 @@ type Generator struct {
 	pkgTemplates map[string]pkg.Interface
 }
 
-func NewGenerator() *Generator {
+func NewGenerator() Interface {
 	fi := util.NewFile()
 	return &Generator{
 		fi: fi,
@@ -25,8 +25,8 @@ func NewGenerator() *Generator {
 	}
 }
 
-func (g *Generator) Generate(module *config.Module) error {
-	for _, pkg := range module.Packages {
+func (g *Generator) Generate(mod *config.Module) error {
+	for _, pkg := range mod.Packages {
 		// Ensure directory exists
 		p := fmt.Sprintf("%s/%s", pkg.Path, pkg.Name)
 		err := g.fi.Mkdir(p, 0755)
@@ -36,7 +36,7 @@ func (g *Generator) Generate(module *config.Module) error {
 
 		// Run generators on directory
 		for _, tpl := range g.pkgTemplates {
-			err := tpl.Generate(pkg)
+			err := tpl.Generate(mod, pkg)
 			if err != nil {
 				return fmt.Errorf("failed to generate file: %v", err)
 			}

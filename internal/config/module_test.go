@@ -10,16 +10,15 @@ import (
 )
 
 var testConfig = `
-module: my-service
-packages:
+module:
+  path: path
+  packages:
     - package: client
       path: internal
     - package: server
       path: internal/services
-      tags:
-        - service
       requires:
-        - client
+        - internal/client
 `
 
 func TestConfigParse(t *testing.T) {
