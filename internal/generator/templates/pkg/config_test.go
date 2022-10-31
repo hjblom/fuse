@@ -20,6 +20,7 @@ func TestConfig(t *testing.T) {
 	pkg := &config.Package{
 		Name: "package",
 		Path: "internal",
+		Tags: []string{"config"},
 	}
 	mod := &config.Module{
 		Path: "test",
