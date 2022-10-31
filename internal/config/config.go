@@ -12,9 +12,9 @@ type Config struct {
 	Module *Module `yaml:"module"`
 }
 
-func NewConfig(modulePath string) *Config {
+func NewConfig(modPath string) *Config {
 	return &Config{
-		Module: NewModule(modulePath),
+		Module: NewModule(modPath),
 	}
 }
 
