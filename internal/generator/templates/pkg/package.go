@@ -8,8 +8,6 @@ import (
 	"github.com/hjblom/fuse/internal/util"
 )
 
-const PackageFileName = "package.go"
-
 type PackageGenerator struct {
 	fi util.FileInterface
 }
@@ -18,8 +16,8 @@ func NewPackageGenerator(fi util.FileInterface) Interface {
 	return &PackageGenerator{fi: fi}
 }
 
-func (g *PackageGenerator) Generate(pkg *config.Package) error {
-	path := fmt.Sprintf("%s/%s", pkg.RelativePath(), PackageFileName)
+func (g *PackageGenerator) Generate(mod *config.Module, pkg *config.Package) error {
+	path := fmt.Sprintf("%s/%s", pkg.RelativePath(), pkg.GoFileName())
 	if g.fi.Exists(path) {
 		return nil
 	}

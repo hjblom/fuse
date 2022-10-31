@@ -10,8 +10,6 @@ type Package struct {
 	Path     string   `yaml:"path,omitempty"`
 	Tags     []string `yaml:"tags,omitempty"`
 	Requires []string `yaml:"requires,omitempty"`
-
-	module *Module
 }
 
 func NewPackage(name, path string, requires, tags []string) *Package {
@@ -23,13 +21,9 @@ func NewPackage(name, path string, requires, tags []string) *Package {
 	}
 }
 
-func (p *Package) ModuleName() string {
-	return p.module.Path
-}
-
 // FullPath returns the full path (including module path) to the package.
 func (p *Package) FullPath() string {
-	return fmt.Sprintf("%s/%s/%s", p.module.Path, p.Path, p.Name)
+	return fmt.Sprintf("%s/%s", p.Path, p.Name)
 }
 
 // RelativePath returns the relative path from the module root to the package.
@@ -42,6 +36,10 @@ func (p *Package) GoPackageName() string {
 		return strings.ToUpper(p.Name)
 	}
 	return strings.ToUpper(p.Name[0:1]) + string(p.Name[1:])
+}
+
+func (p *Package) GoFileName() string {
+	return fmt.Sprintf("%s.go", p.Name)
 }
 
 func (p *Package) Validate() error {

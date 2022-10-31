@@ -18,7 +18,7 @@ func NewConfigGenerator(file util.FileInterface) Interface {
 	return &ConfigGenerator{file: file}
 }
 
-func (g *ConfigGenerator) Generate(pkg *config.Package) error {
+func (g *ConfigGenerator) Generate(mod *config.Module, pkg *config.Package) error {
 	path := fmt.Sprintf("%s/%s", pkg.RelativePath(), ConfigFileName)
 	if g.file.Exists(path) {
 		return nil

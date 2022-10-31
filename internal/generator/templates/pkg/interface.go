@@ -18,7 +18,7 @@ func NewInterfaceGenerator(fi util.FileInterface) Interface {
 	return &InterfaceGenerator{fi: fi}
 }
 
-func (g *InterfaceGenerator) Generate(pkg *config.Package) error {
+func (g *InterfaceGenerator) Generate(mod *config.Module, pkg *config.Package) error {
 	path := fmt.Sprintf("%s/%s/%s", pkg.Path, pkg.Name, InterfaceFileName)
 	if g.fi.Exists(path) {
 		return nil
@@ -31,7 +31,7 @@ func (g *InterfaceGenerator) Generate(pkg *config.Package) error {
 	j.PackageComment(Header)
 
 	// Gomock comment
-	// j.Comment(mockGenComment(pkg.ModuleName(), pkg.Path, pkg.Name))
+	j.Comment(mockGenComment(mod.Path, pkg.Path, pkg.Name))
 
 	// Add interface
 	j.Type().Id("Interface").Interface(
@@ -48,9 +48,9 @@ func (g *InterfaceGenerator) Generate(pkg *config.Package) error {
 	return nil
 }
 
-func mockGenComment(module, path, pkg string) string {
+func mockGenComment(mod, pkgPath, pkg string) string {
 	return "//go:generate mockgen --build_flags=--mod=mod --package=" + pkg + " " +
 		"--destination=mock/" + InterfaceFileName + " " +
-		module + "/" + path + "/" + pkg + " " +
+		mod + "/" + pkgPath + "/" + pkg + " " +
 		"Interface\n"
 }
