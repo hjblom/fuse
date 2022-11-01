@@ -31,14 +31,14 @@ func (c *Module) Validate() error {
 		return nil
 	}
 
-	// Create instance of graph and packages
-	c.packages = make(map[string]*Package)
-	c.graph = graph.New(graph.StringHash, graph.Directed(), graph.PreventCycles())
-
 	// Validate module name
 	if c.Path == "" {
 		return fmt.Errorf("module name is required")
 	}
+
+	// Create instance of graph and packages
+	c.packages = make(map[string]*Package)
+	c.graph = graph.New(graph.StringHash, graph.Directed(), graph.PreventCycles())
 
 	// Validate packages
 	for _, pkg := range c.Packages {
@@ -131,6 +131,7 @@ func (c *Module) ToDOT() ([]byte, error) {
 		return nil, err
 	}
 
+	// Convert to dot
 	var dot bytes.Buffer
 	err := draw.DOT(c.graph, &dot)
 	if err != nil {

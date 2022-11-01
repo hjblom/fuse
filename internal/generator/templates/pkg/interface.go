@@ -5,6 +5,7 @@ import (
 
 	"github.com/dave/jennifer/jen"
 	"github.com/hjblom/fuse/internal/config"
+	"github.com/hjblom/fuse/internal/generator/templates/common"
 	"github.com/hjblom/fuse/internal/util"
 )
 
@@ -28,7 +29,7 @@ func (g *InterfaceGenerator) Generate(mod *config.Module, pkg *config.Package) e
 	j := jen.NewFile(pkg.Name)
 
 	// Add header
-	j.PackageComment(Header)
+	j.PackageComment(common.Header)
 
 	// Gomock comment
 	j.Comment(mockGenComment(mod.Path, pkg.Path, pkg.Name))

@@ -5,6 +5,7 @@ import (
 
 	"github.com/dave/jennifer/jen"
 	"github.com/hjblom/fuse/internal/config"
+	"github.com/hjblom/fuse/internal/generator/templates/common"
 	"github.com/hjblom/fuse/internal/util"
 )
 
@@ -21,13 +22,12 @@ func (g *PackageGenerator) Generate(mod *config.Module, pkg *config.Package) err
 	if g.fi.Exists(path) {
 		return nil
 	}
-	pkgName := pkg.GoPackageName()
 
 	// Create file
 	j := jen.NewFile(pkg.Name)
 
 	// Add header
-	j.PackageComment(DoNotEditHeader)
+	j.PackageComment(common.DoNotEditHeader)
 
 	// Build injections
 	injections := []jen.Code{}
@@ -40,8 +40,8 @@ func (g *PackageGenerator) Generate(mod *config.Module, pkg *config.Package) err
 	// Loop through required struct injections
 	for _, req := range pkg.Requires {
 		reqPkg := mod.GetPackage(req)
-		injections = append(injections, jen.Id(reqPkg.Name).Qual(reqPkg.FullPath(mod.Path), "Interface"))
-		injectionMap[jen.Id(reqPkg.Name)] = jen.Id(reqPkg.Name)
+		injections = append(injections, jen.Id(reqPkg.GoAliasName()).Qual(reqPkg.FullPath(mod.Path), "Interface"))
+		injectionMap[jen.Id(reqPkg.GoAliasName())] = jen.Id(reqPkg.GoAliasName())
 	}
 
 	/*
@@ -51,7 +51,7 @@ func (g *PackageGenerator) Generate(mod *config.Module, pkg *config.Package) err
 			Injections
 		}
 	*/
-	j.Type().Id(pkgName).Struct(
+	j.Type().Id(pkg.GoStructName()).Struct(
 		injections...,
 	)
 
@@ -64,10 +64,10 @@ func (g *PackageGenerator) Generate(mod *config.Module, pkg *config.Package) err
 			}
 		}
 	*/
-	j.Func().Id("New" + pkgName).Params(
+	j.Func().Id(pkg.GoNewStructFuncName()).Params(
 		injections...,
 	).Id("Interface").Block(
-		jen.Return(jen.Op("&").Id(pkgName).Values(injectionMap)),
+		jen.Return(jen.Op("&").Id(pkg.GoStructName()).Values(injectionMap)),
 	)
 
 	// Write file

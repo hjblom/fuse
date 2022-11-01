@@ -6,15 +6,17 @@ import (
 )
 
 type Package struct {
-	Name     string   `yaml:"package"`
+	Name     string   `yaml:"name"`
+	Alias    string   `yaml:"alias,omitempty"`
 	Path     string   `yaml:"path,omitempty"`
 	Tags     []string `yaml:"tags,omitempty"`
 	Requires []string `yaml:"requires,omitempty"`
 }
 
-func NewPackage(name, path string, requires, tags []string) *Package {
+func NewPackage(name, alias, path string, requires, tags []string) *Package {
 	return &Package{
 		Name:     name,
+		Alias:    alias,
 		Path:     path,
 		Requires: requires,
 		Tags:     tags,
@@ -31,15 +33,26 @@ func (p *Package) RelativePath() string {
 	return fmt.Sprintf("%s/%s", p.Path, p.Name)
 }
 
-func (p *Package) GoPackageName() string {
+func (p *Package) GoStructName() string {
 	if len(p.Path) == 1 {
 		return strings.ToUpper(p.Name)
 	}
 	return strings.ToUpper(p.Name[0:1]) + string(p.Name[1:])
 }
 
+func (p *Package) GoNewStructFuncName() string {
+	return fmt.Sprintf("New%s", p.GoStructName())
+}
+
 func (p *Package) GoFileName() string {
 	return fmt.Sprintf("%s.go", p.Name)
+}
+
+func (p *Package) GoAliasName() string {
+	if p.Alias != "" {
+		return p.Alias
+	}
+	return p.Name
 }
 
 func (p *Package) Validate() error {
