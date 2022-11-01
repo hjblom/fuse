@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/hjblom/fuse/internal/config"
+	"github.com/hjblom/fuse/internal/generator/templates/module"
 	"github.com/hjblom/fuse/internal/generator/templates/pkg"
 	"github.com/hjblom/fuse/internal/util"
 )
@@ -11,6 +12,7 @@ import (
 type Generator struct {
 	fi           util.FileInterface
 	pkgTemplates map[string]pkg.Interface
+	modTemplates map[string]module.Interface
 }
 
 func NewGenerator() Interface {
@@ -21,6 +23,9 @@ func NewGenerator() Interface {
 			"interface": pkg.NewInterfaceGenerator(fi),
 			"config":    pkg.NewConfigGenerator(fi),
 			"package":   pkg.NewPackageGenerator(fi),
+		},
+		modTemplates: map[string]module.Interface{
+			"wire": module.NewWireGenerator(fi),
 		},
 	}
 }
@@ -42,5 +47,14 @@ func (g *Generator) Generate(mod *config.Module) error {
 			}
 		}
 	}
+
+	// Run generators on module
+	// for _, tpl := range g.modTemplates {
+	// 	err := tpl.Generate(mod)
+	// 	if err != nil {
+	// 		return fmt.Errorf("failed to generate file: %v", err)
+	// 	}
+	// }
+
 	return nil
 }

@@ -14,6 +14,7 @@ import (
 
 var (
 	path     string
+	alias    string
 	requires []string
 	tags     []string
 )
@@ -27,7 +28,7 @@ var addCmd = &cobra.Command{
 			fmt.Println("please provide a package name")
 			os.Exit(1)
 		}
-		err := commands.Add(DefaultConfigPath, args[0], path, requires, tags)
+		err := commands.Add(DefaultConfigPath, args[0], alias, path, requires, tags)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -38,6 +39,7 @@ var addCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(addCmd)
 	addCmd.Flags().StringVarP(&path, "path", "p", "internal", "Where the package should be placed")
+	addCmd.Flags().StringVarP(&alias, "alias", "a", "", "Alias for package instances (defaults to package name)")
 	addCmd.Flags().StringSliceVarP(&requires, "requires", "r", []string{}, "List of packages this package depends on")
 	addCmd.Flags().StringSliceVarP(&tags, "tag", "t", []string{}, "List of tags for this package")
 }
