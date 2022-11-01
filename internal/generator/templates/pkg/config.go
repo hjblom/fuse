@@ -5,6 +5,7 @@ import (
 
 	"github.com/dave/jennifer/jen"
 	"github.com/hjblom/fuse/internal/config"
+	"github.com/hjblom/fuse/internal/generator/templates/common"
 	"github.com/hjblom/fuse/internal/util"
 )
 
@@ -34,7 +35,7 @@ func (g *ConfigGenerator) Generate(mod *config.Module, pkg *config.Package) erro
 	j := jen.NewFile(pkg.Name)
 
 	// Add header
-	j.PackageComment(Header)
+	j.PackageComment(common.Header)
 
 	// Add config struct
 	j.Type().Id("Config").Struct(

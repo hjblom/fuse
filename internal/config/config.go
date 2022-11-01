@@ -9,7 +9,8 @@ import (
 )
 
 type Config struct {
-	Module *Module `yaml:"module"`
+	Version string  `yaml:"version"`
+	Module  *Module `yaml:"module"`
 }
 
 func NewConfig(modPath string) *Config {
