@@ -25,7 +25,8 @@ func NewGenerator() Interface {
 			"package":   pkg.NewPackageGenerator(fi),
 		},
 		modTemplates: map[string]module.Interface{
-			"wire": module.NewWireGenerator(fi),
+			// "wire":   module.NewWireGenerator(fi),
+			"config": module.NewConfigGenerator(fi),
 		},
 	}
 }
@@ -49,12 +50,12 @@ func (g *Generator) Generate(mod *config.Module) error {
 	}
 
 	// Run generators on module
-	// for _, tpl := range g.modTemplates {
-	// 	err := tpl.Generate(mod)
-	// 	if err != nil {
-	// 		return fmt.Errorf("failed to generate file: %v", err)
-	// 	}
-	// }
+	for _, tpl := range g.modTemplates {
+		err := tpl.Generate(mod)
+		if err != nil {
+			return fmt.Errorf("failed to generate file: %v", err)
+		}
+	}
 
 	return nil
 }
