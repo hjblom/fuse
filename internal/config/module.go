@@ -185,6 +185,17 @@ func (c *Module) GetPackage(pkgName string) *Package {
 	return pkg
 }
 
+func (c *Module) GetPackageOutDegree(pkg *Package) int {
+	am, err := c.graph.AdjacencyMap()
+	if err != nil {
+		return 0
+	}
+	if p, ok := am[pkg.RelativePath()]; ok {
+		return len(p)
+	}
+	return 0
+}
+
 var defaultNodeAttributes = []func(*graph.VertexProperties){
 	graph.VertexAttribute("style", "filled"),
 	graph.VertexAttribute("shape", "box"),

@@ -23,9 +23,10 @@ func NewGenerator() Interface {
 			"interface": pkg.NewInterfaceGenerator(fi),
 			"config":    pkg.NewConfigGenerator(fi),
 			"package":   pkg.NewPackageGenerator(fi),
+			"service":   pkg.NewServiceGenerator(fi),
 		},
 		modTemplates: map[string]module.Interface{
-			// "wire":   module.NewWireGenerator(fi),
+			"fuse":   module.NewFuseGenerator(fi),
 			"config": module.NewConfigGenerator(fi),
 		},
 	}
