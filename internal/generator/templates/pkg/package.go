@@ -66,7 +66,7 @@ func (g *PackageGenerator) Generate(mod *config.Module, pkg *config.Package) err
 	*/
 	j.Func().Id(pkg.GoNewStructFuncName()).Params(
 		injections...,
-	).Id("Interface").Block(
+	).Op("*").Id(pkg.GoStructName()).Block(
 		jen.Return(jen.Op("&").Id(pkg.GoStructName()).Values(injectionMap)),
 	)
 
