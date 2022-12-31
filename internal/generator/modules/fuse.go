@@ -1,23 +1,40 @@
-package module
+package modules
 
 import (
 	"fmt"
 
 	"github.com/dave/jennifer/jen"
+	"github.com/hjblom/fuse/internal/common"
 	"github.com/hjblom/fuse/internal/config"
-	"github.com/hjblom/fuse/internal/generator/templates/common"
 	"github.com/hjblom/fuse/internal/util"
 )
 
-const RuntimeGithub = "github.com/hjblom/fuse/runtime"
-const FuseFile = "fuse.go"
+const fuseRuntimeQualifier = "github.com/hjblom/fuse/runtime"
 
-type FuseGenerator struct {
+var FuseGenerator = &fuseGenerator{file: util.File}
+
+type fuseGenerator struct {
 	file util.FileInterface
 }
 
-func NewFuseGenerator(fi util.FileInterface) Interface {
-	return &FuseGenerator{file: fi}
+func (g *fuseGenerator) Name() string {
+	return "Fuse"
+}
+
+func (g *fuseGenerator) Description() string {
+	return "Generate the fuse.go file. This file contains the dependency injection logic, wiring up the packages in the correct order."
+}
+
+func (g *fuseGenerator) Tags() map[string]string {
+	return map[string]string{
+		"config":  "Generate config injection on packages that have it.",
+		"setup":   "Calls the Setup() method on packages that have it.",
+		"service": "Returns a list of package services on packages that have it.",
+	}
+}
+
+func (g *fuseGenerator) Plugins() map[string]string {
+	return map[string]string{}
 }
 
 // Generate the fuse.go file.
@@ -49,11 +66,7 @@ func NewFuseGenerator(fi util.FileInterface) Interface {
 	}
 
 */
-func (g *FuseGenerator) Generate(mod *config.Module) error {
-	path := fmt.Sprintf("internal/%s", FuseFile)
-	if g.file.Exists(path) {
-		return nil
-	}
+func (g *fuseGenerator) Generate(mod *config.Module) error {
 
 	// Build injection set
 	packages, err := mod.TopologicalPackageOrder()
@@ -72,8 +85,8 @@ func (g *FuseGenerator) Generate(mod *config.Module) error {
 
 	// Add []service and err initialization
 	s.Add(jen.Var().Id("err").Error())
-	j.ImportName(RuntimeGithub, "runtime")
-	s.Add(jen.Id("services").Op(":=").Index().Qual(RuntimeGithub, "Service").Values())
+	j.ImportName(fuseRuntimeQualifier, "runtime")
+	s.Add(jen.Id("services").Op(":=").Index().Qual(fuseRuntimeQualifier, "Service").Values())
 	s.Add(jen.Line())
 
 	// Add package initializations
@@ -126,13 +139,14 @@ func (g *FuseGenerator) Generate(mod *config.Module) error {
 	// func Fuse(c *Config) ([]runtime.Service, error)
 	j.Add(jen.Func().Id("Fuse").Params(
 		jen.Id("cfg").Op("*").Id("Config"),
-	).Params(jen.Index().Qual(RuntimeGithub, "Service"), jen.Error()).Block(
+	).Params(jen.Index().Qual(fuseRuntimeQualifier, "Service"), jen.Error()).Block(
 		s...,
 	))
 
 	// Write to file
 	c := fmt.Sprintf("%#v", j)
-	err = g.file.Write(path, []byte(c), 0644)
+	path := fmt.Sprintf("internal/%s", "fuse.go")
+	err = g.file.Write(path, []byte(c))
 	if err != nil {
 		return fmt.Errorf("failed to write interface file: %w", err)
 	}

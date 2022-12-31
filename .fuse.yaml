@@ -1,9 +1,77 @@
+version: 1alpha
 module:
   path: path
   packages:
-    - package: client
-      path: internal
-    - package: server
+    - id: client
+      name: client
+      package: client
+      path: internal/clients
+      alias: cl
+      tags:
+        - config
+      # TODO Future
+      # config:
+      #   - name: address
+      #     type: string
+      #     description: Address of the server
+      #     env: CLIENT_ADDRESS
+      #     required: true
+      # TODO Future
+      # plugins:
+      #   openapi-client:
+      #     spec: api/openapi.yaml
+
+    - id: server
+      name: server
+      package: server
       path: internal/services
       requires:
-        - internal/client
+        - client
+      tags:
+        - service
+        - setup
+        - config
+      # TODO Future
+      # config:
+      #   - name: port
+      #     type: int
+      #     description: Port of the server
+      #     env: SERVER_PORT
+      #     required: true
+      # TODO Future
+      # plugins:
+      #   openapi-server:
+      #     spec: api/openapi.yaml
+
+# Example commands
+# fuse add package client --path internal/clients --alias cl --config
+# fuse add package server --path internal/services --alias s --requires client --service --setup --config
+# fuse add plugin config --name address --type string --description "Address of the server" --env SERVER_ADDRESS --required --target client
+# fuse add plugin openapi --spec api/openapi.yaml --target client
+# fuse add plugin config --name port --type int --default 8080 --description "Port to listen on" --env PORT --required --target server
+# fuse add pluging config --name address --type string --description "Address of the server" --env SERVER_ADDRESS --required --target client
+
+# TODO Template idea
+# templates:
+#   - name: client
+#     path: internal/client
+#     plugins:
+#       - name: config
+#         config:
+#           - name: Address
+#             type: string
+#             default: "localhost:8080"
+#             description: "Address of the server"
+# plugins:
+#   - name: logger
+#     config:
+#       type: logrus
+#   - name: tracer
+#     config:
+#       type: jaeger
+#       config:
+#         - name: Address
+#           type: string
+#           default: "localhost:6831"
+#           description: "Address of the jaeger agent"
+#   - name: docker

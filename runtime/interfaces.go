@@ -11,5 +11,5 @@ type Service interface {
 
 type Logger interface {
 	Info(log string)
-	Error(log string)
+	Error(log string, err error)
 }
