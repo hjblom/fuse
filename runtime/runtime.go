@@ -3,7 +3,9 @@ package runtime
 import (
 	"fmt"
 	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -21,25 +23,37 @@ func NewRuntime(services []Service, logger Logger) *Runtime {
 }
 
 func (r *Runtime) Start() error {
-	r.logger.Info("starting")
+	r.logger.Info("starting services")
 	wg := sync.WaitGroup{}
+	var err error
+
+	// Setup channels
+	startErr := make(chan error, 1)
+	osSignal := make(chan os.Signal, 1)
+	signal.Notify(osSignal, syscall.SIGINT, syscall.SIGTERM)
 
 	// Start app
 	wg.Add(1)
-	go func() {
+	go func(startErr chan error) {
 		defer wg.Done()
 		err := r.start()
 		if err != nil {
-			panic(err)
+			startErr <- err
 		}
-	}()
+	}(startErr)
 
-	// Wait for signals
-	signal := ListenForSignals()
-	r.logger.Info(fmt.Sprintf("%s signal received", signal.String()))
+	// Wait for service failure or kill signal
+	select {
+	case err = <-startErr:
+		r.logger.Error("failed to start services", err)
+		break
+	case sig := <-osSignal:
+		r.logger.Info(fmt.Sprintf("%s signal received", sig.String()))
+		break
+	}
 
-	// Attempt to stop app gracefully
-	r.logger.Info("stopping app gracefully")
+	// Attempt to stop services gracefully
+	r.logger.Info("attempting to stop services gracefully")
 	var done = make(chan bool, 1)
 	go func() {
 		r.stop()
@@ -50,14 +64,14 @@ func (r *Runtime) Start() error {
 	// Wait for app to stop or kill after graceful shutdown timeout
 	select {
 	case <-done:
-		r.logger.Info("app stopped gracefully")
-		os.Exit(0)
+		r.logger.Info("stopped all services")
+		break
 	case <-time.After(5 * time.Second):
 		r.logger.Info("app stopped forcefully")
-		os.Exit(1)
+		break
 	}
 
-	return nil
+	return err
 }
 
 func (r *Runtime) start() error {

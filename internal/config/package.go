@@ -6,26 +6,29 @@ import (
 )
 
 type Package struct {
-	Name     string   `yaml:"name"`
-	Alias    string   `yaml:"alias,omitempty"`
-	Path     string   `yaml:"path,omitempty"`
-	Tags     []string `yaml:"tags,omitempty"`
-	Requires []string `yaml:"requires,omitempty"`
+	ID       string         `yaml:"id"`
+	Name     string         `yaml:"name"`
+	Path     string         `yaml:"path"`
+	Config   *PackageConfig `yaml:"config,omitempty"`
+	Alias    string         `yaml:"alias,omitempty"`
+	Tags     []string       `yaml:"tags,omitempty"`
+	Requires []string       `yaml:"requires,omitempty"`
 }
 
 func NewPackage(name, alias, path string, requires, tags []string) *Package {
 	return &Package{
+		ID:       name,
 		Name:     name,
 		Alias:    alias,
 		Path:     path,
-		Requires: requires,
 		Tags:     tags,
+		Requires: requires,
 	}
 }
 
 // FullPath returns the full path (including module path) to the package.
 func (p *Package) FullPath(modPath string) string {
-	return fmt.Sprintf("%s/%s/%s", modPath, p.Path, p.Name)
+	return fmt.Sprintf("%s/%s", modPath, p.RelativePath())
 }
 
 // RelativePath returns the relative path from the module root to the package.
@@ -34,7 +37,7 @@ func (p *Package) RelativePath() string {
 }
 
 func (p *Package) GoStructName() string {
-	if len(p.Path) == 1 {
+	if len(p.Name) == 1 {
 		return strings.ToUpper(p.Name)
 	}
 	return strings.ToUpper(p.Name[0:1]) + string(p.Name[1:])

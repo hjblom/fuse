@@ -12,9 +12,11 @@ import (
 
 type Module struct {
 	Path     string     `yaml:"path"`
-	Packages []*Package `yaml:"packages"`
+	Packages []*Package `yaml:"packages,omitempty"`
 
+	// Reverse lookup map of packages [id]
 	packages map[string]*Package
+	paths    map[string]bool
 	graph    graph.Graph[string, string]
 }
 
@@ -38,30 +40,35 @@ func (c *Module) Validate() error {
 
 	// Create instance of graph and packages
 	c.packages = make(map[string]*Package)
+	c.paths = make(map[string]bool)
 	c.graph = graph.New(graph.StringHash, graph.Directed(), graph.PreventCycles())
 
 	// Validate packages
 	for _, pkg := range c.Packages {
-		if _, ok := c.packages[pkg.RelativePath()]; ok {
-			return fmt.Errorf("package %s already exists", pkg.RelativePath())
+		if _, ok := c.packages[pkg.ID]; ok {
+			return fmt.Errorf("cannot add package %s with id %s, already exists", pkg.Name, pkg.ID)
+		}
+		if _, ok := c.paths[pkg.FullPath(c.Path)]; ok {
+			return fmt.Errorf("cannot add package %s with path %s, already exists", pkg.Name, pkg.FullPath(c.Path))
 		}
 
 		// Add pkg to reverse lookup map
-		c.packages[pkg.RelativePath()] = pkg
+		c.packages[pkg.ID] = pkg
+		c.paths[pkg.FullPath(c.Path)] = true
 
 		// Add vertex to graph
-		err := c.graph.AddVertex(pkg.RelativePath(), defaultNodeAttributes...)
+		err := c.graph.AddVertex(pkg.ID, defaultNodeAttributes...)
 		if err != nil {
-			delete(c.packages, pkg.RelativePath())
-			return fmt.Errorf("failed to add vertex %s: %w", pkg.RelativePath(), err)
+			delete(c.packages, pkg.ID)
+			return fmt.Errorf("failed to add vertex %s: %w", pkg.ID, err)
 		}
 	}
 
 	for _, pkg := range c.Packages {
 		for _, req := range pkg.Requires {
-			err := c.graph.AddEdge(req, pkg.RelativePath(), defaultEdgeAttributes...)
+			err := c.graph.AddEdge(req, pkg.ID, defaultEdgeAttributes...)
 			if err != nil {
-				return fmt.Errorf("failed to add edge between %s and %s: %w", pkg.RelativePath(), req, err)
+				return fmt.Errorf("failed to add edge between %s and %s: %w", pkg.ID, req, err)
 			}
 		}
 	}
@@ -141,7 +148,7 @@ func (c *Module) ToDOT() ([]byte, error) {
 }
 
 // ToSVG attempts to convert the module's graph to SVG using the dot command.
-// ToSVG's logic is based on https://github.com/google/pprof/blob/main/internal/driver/webui.go#L336
+// ToSVG's logic is based on https://github.com/google/pprof/blob/main/internal/driver/webui.go#L339
 func (c *Module) ToSVG() ([]byte, error) {
 	// Ensure that the graph has been validated
 	if err := c.Validate(); err != nil {
@@ -190,7 +197,7 @@ func (c *Module) GetPackageOutDegree(pkg *Package) int {
 	if err != nil {
 		return 0
 	}
-	if p, ok := am[pkg.RelativePath()]; ok {
+	if p, ok := am[pkg.ID]; ok {
 		return len(p)
 	}
 	return 0
@@ -199,7 +206,7 @@ func (c *Module) GetPackageOutDegree(pkg *Package) int {
 var defaultNodeAttributes = []func(*graph.VertexProperties){
 	graph.VertexAttribute("style", "filled"),
 	graph.VertexAttribute("shape", "box"),
-	graph.VertexAttribute("fillcolor", "orange"),
+	graph.VertexAttribute("fillcolor", "lightblue1"),
 	graph.VertexAttribute("width", "1.5"),
 	graph.VertexAttribute("height", "0.5"),
 }

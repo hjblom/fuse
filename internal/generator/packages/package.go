@@ -1,28 +1,33 @@
-package pkg
+package packages
 
 import (
 	"fmt"
 
 	"github.com/dave/jennifer/jen"
+	"github.com/hjblom/fuse/internal/common"
 	"github.com/hjblom/fuse/internal/config"
-	"github.com/hjblom/fuse/internal/generator/templates/common"
 	"github.com/hjblom/fuse/internal/util"
 )
 
-type PackageGenerator struct {
-	fi util.FileInterface
+var PackageGenerator = &packageGenerator{file: util.File}
+
+type packageGenerator struct {
+	file util.FileInterface
 }
 
-func NewPackageGenerator(fi util.FileInterface) Interface {
-	return &PackageGenerator{fi: fi}
+func (g *packageGenerator) Name() string {
+	return "Package generator"
 }
 
-func (g *PackageGenerator) Generate(mod *config.Module, pkg *config.Package) error {
-	path := fmt.Sprintf("%s/%s", pkg.RelativePath(), pkg.GoFileName())
-	if g.fi.Exists(path) {
-		return nil
-	}
+func (g *packageGenerator) Description() string {
+	return "Generate the package.go file. This file contains the package struct and constructor."
+}
 
+func (g *packageGenerator) Plugins() map[string]string {
+	return map[string]string{}
+}
+
+func (g *packageGenerator) Generate(mod *config.Module, pkg *config.Package) error {
 	// Create file
 	j := jen.NewFile(pkg.Name)
 
@@ -32,11 +37,12 @@ func (g *PackageGenerator) Generate(mod *config.Module, pkg *config.Package) err
 	// Build injections
 	injections := []jen.Code{}
 	injectionMap := jen.Dict{}
-	// Add optional config injection
-	if pkg.HasTag(ConfigTag) {
+
+	if pkg.HasTag("config") {
 		injections = append(injections, jen.Id("cfg").Op("*").Id("Config"))
 		injectionMap[jen.Id("cfg")] = jen.Id("cfg")
 	}
+
 	// Loop through required struct injections
 	for _, req := range pkg.Requires {
 		reqPkg := mod.GetPackage(req)
@@ -71,8 +77,9 @@ func (g *PackageGenerator) Generate(mod *config.Module, pkg *config.Package) err
 	)
 
 	// Write file
+	path := fmt.Sprintf("%s/%s", pkg.RelativePath(), pkg.GoFileName())
 	c := fmt.Sprintf("%#v", j)
-	err := g.fi.Write(path, []byte(c), 0644)
+	err := g.file.Write(path, []byte(c))
 	if err != nil {
 		return fmt.Errorf("failed to write package file: %w", err)
 	}

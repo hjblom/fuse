@@ -4,59 +4,63 @@ import (
 	"fmt"
 
 	"github.com/hjblom/fuse/internal/config"
-	"github.com/hjblom/fuse/internal/generator/templates/module"
-	"github.com/hjblom/fuse/internal/generator/templates/pkg"
 	"github.com/hjblom/fuse/internal/util"
 )
 
 type Generator struct {
-	fi           util.FileInterface
-	pkgTemplates map[string]pkg.Interface
-	modTemplates map[string]module.Interface
+	file util.FileInterface
+
+	pGens []PackageGenerator
+	mGens []ModuleGenerator
 }
 
 func NewGenerator() Interface {
-	fi := util.NewFile()
 	return &Generator{
-		fi: fi,
-		pkgTemplates: map[string]pkg.Interface{
-			"interface": pkg.NewInterfaceGenerator(fi),
-			"config":    pkg.NewConfigGenerator(fi),
-			"package":   pkg.NewPackageGenerator(fi),
-			"service":   pkg.NewServiceGenerator(fi),
-		},
-		modTemplates: map[string]module.Interface{
-			"fuse":   module.NewFuseGenerator(fi),
-			"config": module.NewConfigGenerator(fi),
-		},
+		file:  util.File,
+		pGens: PackageGenerators,
+		mGens: ModuleGenerators,
 	}
 }
 
 func (g *Generator) Generate(mod *config.Module) error {
+	// Generate packages
 	for _, pkg := range mod.Packages {
-		// Ensure directory exists
-		p := fmt.Sprintf("%s/%s", pkg.Path, pkg.Name)
-		err := g.fi.Mkdir(p, 0755)
+		err := g.file.Mkdir(pkg.RelativePath())
 		if err != nil {
-			return fmt.Errorf("failed to create directory: %w", err)
+			return fmt.Errorf("failed to create package directory: %w", err)
 		}
-
-		// Run generators on directory
-		for _, tpl := range g.pkgTemplates {
-			err := tpl.Generate(mod, pkg)
-			if err != nil {
-				return fmt.Errorf("failed to generate file: %v", err)
-			}
+		err = g.generatePackage(mod, pkg)
+		if err != nil {
+			return fmt.Errorf("failed to generate package: %w", err)
 		}
 	}
 
-	// Run generators on module
-	for _, tpl := range g.modTemplates {
-		err := tpl.Generate(mod)
-		if err != nil {
-			return fmt.Errorf("failed to generate file: %v", err)
-		}
+	// Ensure internal directory exists
+	g.file.Mkdir("internal")
+	err := g.generateModule(mod)
+	if err != nil {
+		return fmt.Errorf("failed to generate module: %w", err)
 	}
 
+	return nil
+}
+
+func (g *Generator) generateModule(mod *config.Module) error {
+	for _, mGen := range g.mGens {
+		err := mGen.Generate(mod)
+		if err != nil {
+			return fmt.Errorf("generator %s failed: %w", mGen.Name(), err)
+		}
+	}
+	return nil
+}
+
+func (g *Generator) generatePackage(mod *config.Module, pkg *config.Package) error {
+	for _, pGen := range g.pGens {
+		err := pGen.Generate(mod, pkg)
+		if err != nil {
+			return fmt.Errorf("failed to generate package: %w", err)
+		}
+	}
 	return nil
 }

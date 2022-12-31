@@ -5,9 +5,10 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
-	"github.com/hjblom/fuse/internal/commands"
-
+	"github.com/hjblom/fuse/internal/config"
+	"github.com/hjblom/fuse/internal/util"
 	"github.com/spf13/cobra"
 )
 
@@ -16,9 +17,26 @@ var visualizeCmd = &cobra.Command{
 	Use:   "visualize",
 	Short: "Visualize the project dependency graph",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := commands.Visualize(PersistentFlagConfigPath)
+		// Arguments
+		configPath := PersistentFlagConfigPath
+
+		// Read config file
+		c := config.Config{}
+		err := util.File.ReadYamlStruct(configPath, &c)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("Error reading config file:", err)
+			os.Exit(1)
+		}
+
+		svg, err := c.Module.ToSVG()
+		if err != nil {
+			fmt.Println("failed to generate SVG: ", err)
+		}
+
+		// Write svg to file
+		err = util.File.Write("graph.svg", svg)
+		if err != nil {
+			fmt.Println("failed to write svg to file: ", err)
 		}
 	},
 }

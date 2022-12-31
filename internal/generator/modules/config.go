@@ -1,36 +1,33 @@
-package module
+package modules
 
 import (
 	"fmt"
 
 	"github.com/dave/jennifer/jen"
+	"github.com/hjblom/fuse/internal/common"
 	"github.com/hjblom/fuse/internal/config"
-	"github.com/hjblom/fuse/internal/generator/templates/common"
 	"github.com/hjblom/fuse/internal/util"
 )
 
-const ConfigFile = "config.go"
+var ConfigGenerator = &configGenerator{file: util.File}
 
-type ConfigGenerator struct {
+type configGenerator struct {
 	file util.FileInterface
 }
 
-func NewConfigGenerator(fi util.FileInterface) Interface {
-	return &ConfigGenerator{file: fi}
+func (g *configGenerator) Name() string {
+	return "Config"
 }
 
-/*
-	type Config struct {
-		Pkg1 *pkg1.Config
-		Pkg2 *pkg2.Config
-	}
-*/
-func (g *ConfigGenerator) Generate(mod *config.Module) error {
-	path := fmt.Sprintf("internal/%s", ConfigFile)
-	if g.file.Exists(path) {
-		return nil
-	}
+func (g *configGenerator) Description() string {
+	return "Generate the module config.go file."
+}
 
+func (g *configGenerator) Plugins() map[string]string {
+	return map[string]string{}
+}
+
+func (g *configGenerator) Generate(mod *config.Module) error {
 	// Create file
 	j := jen.NewFile("internal")
 
@@ -50,7 +47,8 @@ func (g *ConfigGenerator) Generate(mod *config.Module) error {
 
 	// Write file
 	c := fmt.Sprintf("%#v", j)
-	err := g.file.Write(path, []byte(c), 0644)
+	path := fmt.Sprintf("internal/%s", "config.go")
+	err := g.file.Write(path, []byte(c))
 	if err != nil {
 		return fmt.Errorf("failed to write config file: %w", err)
 	}
