@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hjblom/fuse/internal/config"
 	"github.com/hjblom/fuse/internal/util"
 	"github.com/spf13/cobra"
 )
@@ -16,22 +15,28 @@ import (
 var visualizeCmd = &cobra.Command{
 	Use:   "visualize",
 	Short: "Visualize the project dependency graph",
-	Run: func(cmd *cobra.Command, args []string) {
-		// Arguments
-		configPath := PersistentFlagConfigPath
-
-		// Read config file
-		c := config.Config{}
-		err := util.File.ReadYamlStruct(configPath, &c)
+	PreRun: func(cmd *cobra.Command, args []string) {
+		// Validation
+		if len(args) != 0 {
+			fmt.Println("No arguments expected")
+			os.Exit(1)
+		}
+		err := util.File.ReadYamlStruct(PersistentFlagConfigPath, &PersistentConfig)
 		if err != nil {
 			fmt.Println("Error reading config file:", err)
 			os.Exit(1)
 		}
-
-		svg, err := c.Module.ToSVG()
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		// Generate dot
+		dot, err := PersistentConfig.Module.ToDOT()
 		if err != nil {
-			fmt.Println("failed to generate SVG: ", err)
+			fmt.Println("failed to generate dot: ", err)
+			os.Exit(1)
 		}
+
+		// Convert dot to svg
+		svg, err := util.Con.ToSvg(dot)
 
 		// Write svg to file
 		err = util.File.Write("graph.svg", svg)

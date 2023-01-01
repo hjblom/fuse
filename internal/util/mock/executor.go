@@ -8,6 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	util "github.com/hjblom/fuse/internal/util"
 )
 
 // MockExecutor is a mock of Executor interface.
@@ -33,21 +34,22 @@ func (m *MockExecutor) EXPECT() *MockExecutorMockRecorder {
 	return m.recorder
 }
 
-// Command mocks base method.
-func (m *MockExecutor) Command(arg0 string, arg1 ...string) error {
+// Execute mocks base method.
+func (m *MockExecutor) Execute(arg0 string, arg1 ...util.ExecuteOption) ([]byte, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{arg0}
 	for _, a := range arg1 {
 		varargs = append(varargs, a)
 	}
-	ret := m.ctrl.Call(m, "Command", varargs...)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret := m.ctrl.Call(m, "Execute", varargs...)
+	ret0, _ := ret[0].([]byte)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
-// Command indicates an expected call of Command.
-func (mr *MockExecutorMockRecorder) Command(arg0 interface{}, arg1 ...interface{}) *gomock.Call {
+// Execute indicates an expected call of Execute.
+func (mr *MockExecutorMockRecorder) Execute(arg0 interface{}, arg1 ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0}, arg1...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Command", reflect.TypeOf((*MockExecutor)(nil).Command), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockExecutor)(nil).Execute), varargs...)
 }

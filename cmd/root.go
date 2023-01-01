@@ -38,7 +38,7 @@ var (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "fuse",
-	Short: "A go microservice generator framework.",
+	Short: "A go project generator.",
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

@@ -1,6 +1,8 @@
 package modules
 
 import (
+	"fmt"
+
 	"github.com/hjblom/fuse/internal/config"
 	"github.com/hjblom/fuse/internal/util"
 )
@@ -8,7 +10,7 @@ import (
 var ModInitGenerator = &modInitGenerator{file: util.File, exec: util.Exec}
 
 type modInitGenerator struct {
-	file util.FileInterface
+	file util.FileReadWriter
 	exec util.Executor
 }
 
@@ -28,5 +30,9 @@ func (g *modInitGenerator) Generate(mod *config.Module) error {
 	if g.file.Exists("go.mod") {
 		return nil
 	}
-	return g.exec.Command("go", "mod", "init", mod.Path)
+	_, err := g.exec.Execute("go", util.WithArgs("mod", "init", mod.Path))
+	if err != nil {
+		return fmt.Errorf("failed to execute \"go mod init\": %w", err)
+	}
+	return nil
 }

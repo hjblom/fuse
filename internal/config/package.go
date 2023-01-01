@@ -5,14 +5,22 @@ import (
 	"strings"
 )
 
+type PackageConfig struct {
+	Name        string `yaml:"name"`
+	Type        string `yaml:"type"`
+	Description string `yaml:"description"`
+	Env         string `yaml:"env"`
+	Required    bool   `yaml:"required"`
+}
+
 type Package struct {
-	ID       string         `yaml:"id"`
-	Name     string         `yaml:"name"`
-	Path     string         `yaml:"path"`
-	Config   *PackageConfig `yaml:"config,omitempty"`
-	Alias    string         `yaml:"alias,omitempty"`
-	Tags     []string       `yaml:"tags,omitempty"`
-	Requires []string       `yaml:"requires,omitempty"`
+	ID       string          `yaml:"id"`
+	Name     string          `yaml:"name"`
+	Path     string          `yaml:"path"`
+	Config   []PackageConfig `yaml:"config,omitempty"`
+	Alias    string          `yaml:"alias,omitempty"`
+	Tags     []string        `yaml:"tags,omitempty"`
+	Requires []string        `yaml:"requires,omitempty"`
 }
 
 func NewPackage(name, alias, path string, requires, tags []string) *Package {

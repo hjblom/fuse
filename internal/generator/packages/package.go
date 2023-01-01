@@ -12,7 +12,7 @@ import (
 var PackageGenerator = &packageGenerator{file: util.File}
 
 type packageGenerator struct {
-	file util.FileInterface
+	file util.FileReadWriter
 }
 
 func (g *packageGenerator) Name() string {

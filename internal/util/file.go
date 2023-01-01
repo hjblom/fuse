@@ -7,13 +7,13 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-//go:generate mockgen --build_flags=--mod=mod --package=mock --destination=mock/file.go github.com/hjblom/fuse/internal/util FileInterface
+//go:generate mockgen --build_flags=--mod=mod --package=mock --destination=mock/file.go github.com/hjblom/fuse/internal/util FileReadWriter
 
 const filePermission = 0644
 const directoryPermission = 0755
 
-// FileInterface is an interface for file operations
-type FileInterface interface {
+// FileReadWriter is an interface for file operations
+type FileReadWriter interface {
 	Write(path string, data []byte) error
 	Read(path string) ([]byte, error)
 	Mkdir(folderPath string) error
@@ -22,7 +22,7 @@ type FileInterface interface {
 	ReadYamlStruct(path string, data interface{}) error
 }
 
-var File FileInterface = &file{filePermission: filePermission, directoryPermission: directoryPermission}
+var File FileReadWriter = &file{filePermission: filePermission, directoryPermission: directoryPermission}
 
 // file implements FileInterface
 type file struct {

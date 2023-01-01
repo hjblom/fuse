@@ -12,7 +12,7 @@ import (
 var ConfigGenerator = &configGenerator{file: util.File}
 
 type configGenerator struct {
-	file util.FileInterface
+	file util.FileReadWriter
 }
 
 func (g *configGenerator) Name() string {

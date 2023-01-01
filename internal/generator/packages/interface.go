@@ -12,7 +12,7 @@ import (
 var InterfaceGenerator = &interfaceGenerator{file: util.File}
 
 type interfaceGenerator struct {
-	file util.FileInterface
+	file util.FileReadWriter
 }
 
 // Name returns the name of the generator

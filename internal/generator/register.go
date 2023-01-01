@@ -17,4 +17,5 @@ var PackageGenerators []PackageGenerator = []PackageGenerator{
 	packages.PackageGenerator,
 	packages.InterfaceGenerator,
 	packages.ServiceGenerator,
+	packages.SetupGenerator,
 }
