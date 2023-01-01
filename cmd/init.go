@@ -28,7 +28,7 @@ var initCmd = &cobra.Command{
 		configPath := PersistentFlagConfigPath
 
 		// Init config file
-		c := config.NewConfig(modPath)
+		c := config.NewConfig(config.WithModulePath(modPath))
 		err := util.File.WriteYamlStruct(configPath, c)
 		if err != nil {
 			fmt.Println(err)

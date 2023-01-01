@@ -14,7 +14,7 @@ const fuseRuntimeQualifier = "github.com/hjblom/fuse/runtime"
 var FuseGenerator = &fuseGenerator{file: util.File}
 
 type fuseGenerator struct {
-	file util.FileInterface
+	file util.FileReadWriter
 }
 
 func (g *fuseGenerator) Name() string {
@@ -91,7 +91,7 @@ func (g *fuseGenerator) Generate(mod *config.Module) error {
 
 	// Add package initializations
 	for _, pkg := range packages {
-		// Skip packages if they are not used in dependency injection
+		// Skip packages if they are not used in service dependency injection
 		d := mod.GetPackageOutDegree(pkg)
 		if d == 0 && len(pkg.Requires) == 0 {
 			continue

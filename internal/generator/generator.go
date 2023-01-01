@@ -8,7 +8,7 @@ import (
 )
 
 type Generator struct {
-	file util.FileInterface
+	file util.FileReadWriter
 
 	pGens []PackageGenerator
 	mGens []ModuleGenerator

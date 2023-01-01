@@ -12,7 +12,7 @@ import (
 var ServiceGenerator = &serviceGenerator{file: util.File}
 
 type serviceGenerator struct {
-	file util.FileInterface
+	file util.FileReadWriter
 }
 
 func (g *serviceGenerator) Name() string {
@@ -28,6 +28,11 @@ func (g *serviceGenerator) Plugins() map[string]string {
 }
 
 func (g *serviceGenerator) Generate(mod *config.Module, pkg *config.Package) error {
+	path := fmt.Sprintf("%s/%s", pkg.RelativePath(), "service.go")
+	if !pkg.HasTag("service") || g.file.Exists(path) {
+		return nil
+	}
+
 	// Create file
 	j := jen.NewFile(pkg.Name)
 
@@ -55,7 +60,6 @@ func (g *serviceGenerator) Generate(mod *config.Module, pkg *config.Package) err
 	)
 
 	// Write file
-	fileName := fmt.Sprintf("internal/%s/%s", pkg.Name, "service.go")
 	content := fmt.Sprintf("%#v", j)
-	return g.file.Write(fileName, []byte(content))
+	return g.file.Write(path, []byte(content))
 }

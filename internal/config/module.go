@@ -3,70 +3,73 @@ package config
 import (
 	"bytes"
 	"fmt"
-	"os"
-	"os/exec"
 
 	"github.com/dominikbraun/graph"
 	"github.com/dominikbraun/graph/draw"
 )
 
+var reservedAliases = map[string]bool{
+	// Config c
+	"c": true,
+}
+
 type Module struct {
 	Path     string     `yaml:"path"`
 	Packages []*Package `yaml:"packages,omitempty"`
 
-	// Reverse lookup map of packages [id]
 	packages map[string]*Package
 	paths    map[string]bool
+	aliases  map[string]bool
 	graph    graph.Graph[string, string]
 }
 
-func NewModule(path string) *Module {
-	return &Module{
-		Path:     path,
+func NewModule() *Module {
+	m := &Module{
 		Packages: []*Package{},
 	}
+	return m
 }
 
-func (c *Module) Validate() error {
-	// If the graph has been populated, assume validation has been done.
-	if c.graph != nil {
-		return nil
-	}
-
+func (m *Module) Validate() error {
 	// Validate module name
-	if c.Path == "" {
+	if m.Path == "" {
 		return fmt.Errorf("module name is required")
 	}
 
-	// Create instance of graph and packages
-	c.packages = make(map[string]*Package)
-	c.paths = make(map[string]bool)
-	c.graph = graph.New(graph.StringHash, graph.Directed(), graph.PreventCycles())
+	m.packages = make(map[string]*Package)
+	m.paths = make(map[string]bool)
+	m.aliases = make(map[string]bool)
+	m.graph = graph.New(graph.StringHash, graph.Directed(), graph.PreventCycles())
 
 	// Validate packages
-	for _, pkg := range c.Packages {
-		if _, ok := c.packages[pkg.ID]; ok {
-			return fmt.Errorf("cannot add package %s with id %s, already exists", pkg.Name, pkg.ID)
+	for _, pkg := range m.Packages {
+		if _, ok := m.packages[pkg.ID]; ok {
+			return fmt.Errorf("cannot add package \"%s\" with id \"%s\", already exists", pkg.Name, pkg.ID)
 		}
-		if _, ok := c.paths[pkg.FullPath(c.Path)]; ok {
-			return fmt.Errorf("cannot add package %s with path %s, already exists", pkg.Name, pkg.FullPath(c.Path))
+		if _, ok := m.paths[pkg.FullPath(m.Path)]; ok {
+			return fmt.Errorf("cannot add package \"%s\" with path \"%s\", already exists", pkg.Name, pkg.FullPath(m.Path))
+		}
+		if _, ok := m.aliases[pkg.Alias]; ok {
+			return fmt.Errorf("cannot add package \"%s\" with alias \"%s\", already exists", pkg.Name, pkg.Alias)
+		}
+		if _, ok := reservedAliases[pkg.Alias]; ok {
+			return fmt.Errorf("cannot add package \"%s\" with alias \"%s\", reserved", pkg.Name, pkg.Alias)
 		}
 
 		// Add pkg to reverse lookup map
-		c.packages[pkg.ID] = pkg
-		c.paths[pkg.FullPath(c.Path)] = true
+		m.packages[pkg.ID] = pkg
+		m.paths[pkg.FullPath(m.Path)] = true
 
 		// Add vertex to graph
-		err := c.graph.AddVertex(pkg.ID, defaultNodeAttributes...)
+		err := m.graph.AddVertex(pkg.ID, defaultNodeAttributes...)
 		if err != nil {
-			delete(c.packages, pkg.ID)
 			return fmt.Errorf("failed to add vertex %s: %w", pkg.ID, err)
 		}
 	}
 
-	for _, pkg := range c.Packages {
+	for _, pkg := range m.Packages {
 		for _, req := range pkg.Requires {
-			err := c.graph.AddEdge(req, pkg.ID, defaultEdgeAttributes...)
+			err := m.graph.AddEdge(req, pkg.ID, defaultEdgeAttributes...)
 			if err != nil {
 				return fmt.Errorf("failed to add edge between %s and %s: %w", pkg.ID, req, err)
 			}
@@ -76,49 +79,46 @@ func (c *Module) Validate() error {
 	return nil
 }
 
-func (c *Module) AddPackage(pkg *Package) error {
-	// Ensure that the graph has been validated
-	if err := c.Validate(); err != nil {
-		return err
+func (m *Module) AddPackage(pkg *Package) error {
+	if _, ok := m.packages[pkg.ID]; ok {
+		return fmt.Errorf("cannot add package \"%s\" with id \"%s\", already exists", pkg.Name, pkg.ID)
 	}
-
-	// If package already exists, return an error
-	if _, ok := c.packages[pkg.RelativePath()]; ok {
-		return fmt.Errorf("package %s already exists", pkg.RelativePath())
+	if _, ok := m.paths[pkg.FullPath(m.Path)]; ok {
+		return fmt.Errorf("cannot add package \"%s\" with path \"%s\", already exists", pkg.Name, pkg.FullPath(m.Path))
 	}
-
-	// Add pkg to reverse lookup map
-	c.packages[pkg.RelativePath()] = pkg
+	if _, ok := m.aliases[pkg.Alias]; ok {
+		return fmt.Errorf("cannot add package \"%s\" with alias \"%s\", already exists", pkg.Name, pkg.Alias)
+	}
+	if _, ok := reservedAliases[pkg.Alias]; ok {
+		return fmt.Errorf("cannot add package \"%s\" with alias \"%s\", reserved", pkg.Name, pkg.Alias)
+	}
 
 	// Add vertex to graph
-	err := c.graph.AddVertex(pkg.RelativePath(), defaultNodeAttributes...)
+	err := m.graph.AddVertex(pkg.RelativePath(), defaultNodeAttributes...)
 	if err != nil {
-		delete(c.packages, pkg.Name)
 		return fmt.Errorf("failed to add vertex %s: %w", pkg.Name, err)
 	}
 
 	// Add edges to graph
 	for _, req := range pkg.Requires {
-		err := c.graph.AddEdge(req, pkg.RelativePath(), defaultEdgeAttributes...)
+		err := m.graph.AddEdge(req, pkg.RelativePath(), defaultEdgeAttributes...)
 		if err != nil {
 			return fmt.Errorf("failed to add edge between %s and %s: %w", pkg.RelativePath(), req, err)
 		}
 	}
 
 	// Add pkg to config
-	c.Packages = append(c.Packages, pkg)
+	m.packages[pkg.RelativePath()] = pkg
+	m.paths[pkg.FullPath(m.Path)] = true
+	m.aliases[pkg.Alias] = true
+	m.Packages = append(m.Packages, pkg)
 
 	return nil
 }
 
-func (c *Module) TopologicalPackageOrder() ([]*Package, error) {
-	// Ensure that the graph has been validated
-	if err := c.Validate(); err != nil {
-		return nil, err
-	}
-
+func (m *Module) TopologicalPackageOrder() ([]*Package, error) {
 	// Do a topological sort of the graph
-	packages, err := graph.TopologicalSort(c.graph)
+	packages, err := graph.TopologicalSort(m.graph)
 	if err != nil {
 		return nil, fmt.Errorf("failed to sort packages: %w", err)
 	}
@@ -126,74 +126,22 @@ func (c *Module) TopologicalPackageOrder() ([]*Package, error) {
 	// Use result to reverse lookup slice of packages
 	result := make([]*Package, len(packages))
 	for idx, pkg := range packages {
-		result[idx] = c.packages[pkg]
+		result[idx] = m.packages[pkg]
 	}
 
 	return result, nil
 }
 
-func (c *Module) ToDOT() ([]byte, error) {
-	// Ensure that the graph has been validated
-	if err := c.Validate(); err != nil {
-		return nil, err
-	}
-
-	// Convert to dot
-	var dot bytes.Buffer
-	err := draw.DOT(c.graph, &dot)
-	if err != nil {
-		return nil, fmt.Errorf("failed to convert graph to DOT: %w", err)
-	}
-	return dot.Bytes(), nil
-}
-
-// ToSVG attempts to convert the module's graph to SVG using the dot command.
-// ToSVG's logic is based on https://github.com/google/pprof/blob/main/internal/driver/webui.go#L339
-func (c *Module) ToSVG() ([]byte, error) {
-	// Ensure that the graph has been validated
-	if err := c.Validate(); err != nil {
-		return nil, err
-	}
-
-	// Convert graph to DOT
-	dot, err := c.ToDOT()
-	if err != nil {
-		return nil, err
-	}
-
-	// Convert DOT to SVG using dot command
-	cmd := exec.Command("dot", "-Tsvg")
-	svg := &bytes.Buffer{}
-	cmd.Stdin = bytes.NewReader(dot)
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = svg
-	err = cmd.Start()
-	if err != nil {
-		return nil, fmt.Errorf("dot program failed to execute: %w", err)
-	}
-	err = cmd.Wait()
-	if err != nil {
-		return nil, fmt.Errorf("dot program failed to execute: %w", err)
-	}
-
-	return svg.Bytes(), nil
-}
-
-func (c *Module) GetPackage(pkgName string) *Package {
-	// Ensure that the graph has been validated
-	if err := c.Validate(); err != nil {
-		return nil
-	}
-
-	pkg, ok := c.packages[pkgName]
+func (m *Module) GetPackage(pkgName string) *Package {
+	pkg, ok := m.packages[pkgName]
 	if !ok {
 		return nil
 	}
 	return pkg
 }
 
-func (c *Module) GetPackageOutDegree(pkg *Package) int {
-	am, err := c.graph.AdjacencyMap()
+func (m *Module) GetPackageOutDegree(pkg *Package) int {
+	am, err := m.graph.AdjacencyMap()
 	if err != nil {
 		return 0
 	}
@@ -201,6 +149,16 @@ func (c *Module) GetPackageOutDegree(pkg *Package) int {
 		return len(p)
 	}
 	return 0
+}
+
+func (m *Module) ToDOT() ([]byte, error) {
+	// Convert to dot
+	var dot bytes.Buffer
+	err := draw.DOT(m.graph, &dot)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert graph to DOT: %w", err)
+	}
+	return dot.Bytes(), nil
 }
 
 var defaultNodeAttributes = []func(*graph.VertexProperties){
