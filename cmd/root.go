@@ -24,6 +24,7 @@ package cmd
 import (
 	"os"
 
+	"github.com/hjblom/fuse/internal/config"
 	"github.com/spf13/cobra"
 )
 
@@ -32,7 +33,8 @@ const (
 )
 
 var (
-	PersistentFlagConfigPath string
+	RootPersistentFlagConfigPath string
+	RootPersistentConfig         *config.Config
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -52,5 +54,5 @@ func Execute() {
 
 func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.PersistentFlags().StringVarP(&PersistentFlagConfigPath, "config", "c", DefaultConfigPath, "Path to the config file")
+	rootCmd.PersistentFlags().StringVarP(&RootPersistentFlagConfigPath, "config", "c", DefaultConfigPath, "Path to the config file")
 }

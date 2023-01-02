@@ -23,13 +23,6 @@ type Module struct {
 	graph    graph.Graph[string, string]
 }
 
-func NewModule() *Module {
-	m := &Module{
-		Packages: []*Package{},
-	}
-	return m
-}
-
 func (m *Module) Validate() error {
 	// Validate module name
 	if m.Path == "" {

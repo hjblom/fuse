@@ -23,17 +23,6 @@ type Package struct {
 	Requires []string        `yaml:"requires,omitempty"`
 }
 
-func NewPackage(name, alias, path string, requires, tags []string) *Package {
-	return &Package{
-		ID:       name,
-		Name:     name,
-		Alias:    alias,
-		Path:     path,
-		Tags:     tags,
-		Requires: requires,
-	}
-}
-
 // FullPath returns the full path (including module path) to the package.
 func (p *Package) FullPath(modPath string) string {
 	return fmt.Sprintf("%s/%s", modPath, p.RelativePath())
@@ -66,13 +55,6 @@ func (p *Package) GoAliasName() string {
 	return p.Name
 }
 
-func (p *Package) Validate() error {
-	if p.Name == "" {
-		return fmt.Errorf("package name is required")
-	}
-	return nil
-}
-
 func (p *Package) HasTag(tag string) bool {
 	for _, t := range p.Tags {
 		if t == tag {
@@ -80,4 +62,18 @@ func (p *Package) HasTag(tag string) bool {
 		}
 	}
 	return false
+}
+
+func (p *Package) AddConfig(cfg PackageConfig) {
+	p.Config = append(p.Config, cfg)
+}
+
+func (p *Package) Envs() []string {
+	var envs []string
+	for _, c := range p.Config {
+		if c.Env != "" {
+			envs = append(envs, c.Env)
+		}
+	}
+	return envs
 }
