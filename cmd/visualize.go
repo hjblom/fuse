@@ -37,11 +37,16 @@ var visualizeCmd = &cobra.Command{
 
 		// Convert dot to svg
 		svg, err := util.Con.ToSvg(dot)
+		if err != nil {
+			fmt.Println("failed to convert dot to svg: ", err)
+			os.Exit(1)
+		}
 
 		// Write svg to file
 		err = util.File.Write("graph.svg", svg)
 		if err != nil {
 			fmt.Println("failed to write svg to file: ", err)
+			os.Exit(1)
 		}
 	},
 }
