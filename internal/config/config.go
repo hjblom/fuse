@@ -18,7 +18,7 @@ func WithModulePath(path string) ConfigOption {
 func NewConfig(opts ...ConfigOption) *Config {
 	c := &Config{
 		Version: DefaultVersion,
-		Module:  NewModule(),
+		Module:  &Module{},
 	}
 	for _, opt := range opts {
 		opt(c)

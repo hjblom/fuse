@@ -21,7 +21,7 @@ var visualizeCmd = &cobra.Command{
 			fmt.Println("No arguments expected")
 			os.Exit(1)
 		}
-		err := util.File.ReadYamlStruct(PersistentFlagConfigPath, &PersistentConfig)
+		err := util.File.ReadYamlStruct(RootPersistentFlagConfigPath, &RootPersistentConfig)
 		if err != nil {
 			fmt.Println("Error reading config file:", err)
 			os.Exit(1)
@@ -29,7 +29,7 @@ var visualizeCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// Generate dot
-		dot, err := PersistentConfig.Module.ToDOT()
+		dot, err := RootPersistentConfig.Module.ToDOT()
 		if err != nil {
 			fmt.Println("failed to generate dot: ", err)
 			os.Exit(1)
