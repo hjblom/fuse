@@ -29,7 +29,7 @@ func (g *configGenerator) Plugins() map[string]string {
 
 func (g *configGenerator) Generate(mod *config.Module, pkg *config.Package) error {
 	path := fmt.Sprintf("%s/%s", pkg.RelativePath(), "config.go")
-	if g.file.Exists(path) {
+	if g.file.Exists(path) && !pkg.HasTag("config") && len(pkg.Config) == 0 {
 		return nil
 	}
 
