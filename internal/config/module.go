@@ -144,6 +144,16 @@ func (m *Module) GetPackageOutDegree(pkg *Package) int {
 	return 0
 }
 
+func (m *Module) GetEnvs() map[string]bool {
+	envs := make(map[string]bool)
+	for _, pkg := range m.Packages {
+		for _, c := range pkg.Config {
+			envs[c.Env] = true
+		}
+	}
+	return envs
+}
+
 func (m *Module) ToDOT() ([]byte, error) {
 	// Convert to dot
 	var dot bytes.Buffer

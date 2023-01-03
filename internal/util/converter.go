@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-//go:generate mockgen --build_flags=--mod=mod --package=mock --destination=mock/executor.go github.com/hjblom/fuse/internal/util Converter
+//go:generate mockgen --build_flags=--mod=mod --package=mock --destination=mock/converter.go github.com/hjblom/fuse/internal/util Converter
 
 type Converter interface {
 	ToSvg(dot []byte) ([]byte, error)

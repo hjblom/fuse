@@ -12,6 +12,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	AddPersistentFlagTarget string
+)
+
 // addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:              "add",
