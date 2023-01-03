@@ -102,7 +102,7 @@ func (g *fuseGenerator) Generate(mod *config.Module) error {
 
 		// Optionally add config
 		if pkg.HasTag("config") {
-			reqs.Add(jen.Id("cfg").Dot(pkg.GoAliasName()))
+			reqs.Add(jen.Id("cfg").Dot(pkg.Name))
 		}
 		for _, req := range pkg.Requires {
 			reqPkg := mod.GetPackage(req)
