@@ -9,6 +9,8 @@ import (
 	"github.com/hjblom/fuse/internal/util"
 )
 
+const goFlagsQualifier = "github.com/jessevdk/go-flags"
+
 var ConfigGenerator = &configGenerator{file: util.File}
 
 type configGenerator struct {
@@ -37,13 +39,17 @@ func (g *configGenerator) Generate(mod *config.Module) error {
 	// Add config fields
 	fields := jen.Statement(nil)
 	for _, pkg := range mod.Packages {
-		fields.Add(jen.Id(pkg.GoAliasName()).Op("*").Qual(pkg.FullPath(mod.Path), "Config"))
+		j.ImportName(pkg.FullPath(mod.Path), pkg.Name)
+		fields.Add(jen.Id(pkg.Name).Op("*").Qual(pkg.FullPath(mod.Path), "Config"))
 	}
 
 	// Add config struct
 	j.Type().Id("Config").Struct(
 		fields...,
 	)
+
+	// Generate load config function
+	j.Add(generateLoadConfigFunction())
 
 	// Write file
 	c := fmt.Sprintf("%#v", j)
@@ -54,4 +60,17 @@ func (g *configGenerator) Generate(mod *config.Module) error {
 	}
 
 	return nil
+}
+
+func generateLoadConfigFunction() *jen.Statement {
+	s := &jen.Statement{}
+	s.Func().Id("LoadConfig").Params().Params(jen.Op("*").Id("Config"), jen.Id("error")).Block(
+		jen.Id("conf").Op(":=").Op("&").Id("Config").Values(),
+		jen.Id("parser").Op(":=").Qual(goFlagsQualifier, "NewParser").Call(jen.Id("conf"), jen.Qual(goFlagsQualifier, "Default")),
+		jen.If(jen.List(jen.Id("_"), jen.Err()).Op(":=").Id("parser").Dot("Parse").Call(), jen.Err().Op("!=").Nil()).Block(
+			jen.Return(jen.Nil(), jen.Err()),
+		),
+		jen.Return(jen.Id("conf"), jen.Nil()),
+	)
+	return s
 }
