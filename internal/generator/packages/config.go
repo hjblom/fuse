@@ -7,6 +7,8 @@ import (
 	"github.com/hjblom/fuse/internal/common"
 	"github.com/hjblom/fuse/internal/config"
 	"github.com/hjblom/fuse/internal/util"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 var ConfigGenerator = &configGenerator{file: util.File}
@@ -40,8 +42,14 @@ func (g *configGenerator) Generate(mod *config.Module, pkg *config.Package) erro
 	j.PackageComment(common.Header)
 
 	// Add config struct
+	var fields *jen.Statement
+	if len(pkg.Config) == 0 {
+		fields = jen.Comment("TODO: Add methods to interface")
+	} else {
+		fields = generateFields(pkg.Config)
+	}
 	j.Type().Id("Config").Struct(
-		jen.Comment("TODO: Add methods to interface"),
+		fields,
 	)
 
 	// Write file
@@ -52,4 +60,18 @@ func (g *configGenerator) Generate(mod *config.Module, pkg *config.Package) erro
 	}
 
 	return nil
+}
+
+func generateFields(fields []config.PackageConfig) *jen.Statement {
+	j := &jen.Statement{}
+	c := cases.Title(language.English)
+	for _, field := range fields {
+		name := c.String(field.Name)
+		j.Id(name).Id(field.Type).Tag(map[string]string{
+			"long":        field.Description,
+			"env":         field.Env,
+			"description": field.Description,
+		})
+	}
+	return j
 }
