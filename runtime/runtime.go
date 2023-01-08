@@ -7,23 +7,24 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
+
+var logger = logrus.WithField("ctx", "main")
 
 type Runtime struct {
 	services []Service
-
-	logger Logger
 }
 
-func NewRuntime(services []Service, logger Logger) *Runtime {
+func NewRuntime(services []Service) *Runtime {
 	return &Runtime{
 		services: services,
-		logger:   logger,
 	}
 }
 
 func (r *Runtime) Start() error {
-	r.logger.Info("starting services")
+	logger.Info("starting services")
 	wg := sync.WaitGroup{}
 	var err error
 
@@ -45,15 +46,15 @@ func (r *Runtime) Start() error {
 	// Wait for service failure or kill signal
 	select {
 	case err = <-startErr:
-		r.logger.Error("failed to start services", err)
+		logger.Error("failed to start services", err)
 		break
 	case sig := <-osSignal:
-		r.logger.Info(fmt.Sprintf("%s signal received", sig.String()))
+		logger.Info(fmt.Sprintf("%s signal received", sig.String()))
 		break
 	}
 
 	// Attempt to stop services gracefully
-	r.logger.Info("attempting to stop services gracefully")
+	logger.Info("attempting to stop services gracefully")
 	var done = make(chan bool, 1)
 	go func() {
 		r.stop()
@@ -64,10 +65,10 @@ func (r *Runtime) Start() error {
 	// Wait for app to stop or kill after graceful shutdown timeout
 	select {
 	case <-done:
-		r.logger.Info("stopped all services")
+		logger.Info("stopped all services")
 		break
 	case <-time.After(5 * time.Second):
-		r.logger.Info("app stopped forcefully")
+		logger.Info("app stopped forcefully")
 		break
 	}
 
