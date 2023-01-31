@@ -9,8 +9,6 @@ import (
 	"github.com/hjblom/fuse/internal/util"
 )
 
-const fuseRuntimeQualifier = "github.com/hjblom/fuse/runtime"
-
 var FuseGenerator = &fuseGenerator{file: util.File}
 
 type fuseGenerator struct {
@@ -18,11 +16,11 @@ type fuseGenerator struct {
 }
 
 func (g *fuseGenerator) Name() string {
-	return "Fuse"
+	return "Setup Generator"
 }
 
 func (g *fuseGenerator) Description() string {
-	return "Generate the fuse.go file. This file contains the dependency injection logic, wiring up the packages in the correct order."
+	return "Generate the setup.go file. This file contains the dependency injection logic, wiring up the packages in the correct order."
 }
 
 func (g *fuseGenerator) Tags() map[string]string {
@@ -85,8 +83,7 @@ func (g *fuseGenerator) Generate(mod *config.Module) error {
 
 	// Add []service and err initialization
 	s.Add(jen.Var().Id("err").Error())
-	j.ImportName(fuseRuntimeQualifier, "runtime")
-	s.Add(jen.Id("services").Op(":=").Index().Qual(fuseRuntimeQualifier, "Service").Values())
+	s.Add(jen.Id("services").Op(":=").Index().Id("Service").Values())
 	s.Add(jen.Line())
 
 	// Add package initializations
@@ -102,7 +99,7 @@ func (g *fuseGenerator) Generate(mod *config.Module) error {
 
 		// Optionally add config
 		if pkg.HasTag("config") {
-			reqs.Add(jen.Id("cfg").Dot(pkg.Name))
+			reqs.Add(jen.Id("cfg").Dot(pkg.GoStructName()))
 		}
 		for _, req := range pkg.Requires {
 			reqPkg := mod.GetPackage(req)
@@ -136,16 +133,16 @@ func (g *fuseGenerator) Generate(mod *config.Module) error {
 	s.Add(jen.Return(jen.Id("services"), jen.Err()))
 
 	// Inject content setup into function
-	// func Fuse(c *Config) ([]runtime.Service, error)
-	j.Add(jen.Func().Id("Fuse").Params(
+	// func Setup(c *Config) ([]runtime.Service, error)
+	j.Add(jen.Func().Id("Setup").Params(
 		jen.Id("cfg").Op("*").Id("Config"),
-	).Params(jen.Index().Qual(fuseRuntimeQualifier, "Service"), jen.Error()).Block(
+	).Params(jen.Index().Id("Service"), jen.Error()).Block(
 		s...,
 	))
 
 	// Write to file
 	c := fmt.Sprintf("%#v", j)
-	path := fmt.Sprintf("internal/%s", "fuse.go")
+	path := fmt.Sprintf("internal/%s", "setup.go")
 	err = g.file.Write(path, []byte(c))
 	if err != nil {
 		return fmt.Errorf("failed to write interface file: %w", err)

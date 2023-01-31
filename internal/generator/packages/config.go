@@ -68,7 +68,7 @@ func generateFields(fields []config.PackageConfig) *jen.Statement {
 	for _, field := range fields {
 		name := c.String(field.Name)
 		j.Id(name).Id(field.Type).Tag(map[string]string{
-			"long":        field.Description,
+			"long":        field.Name,
 			"env":         field.Env,
 			"description": field.Description,
 		})

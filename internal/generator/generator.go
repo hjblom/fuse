@@ -29,7 +29,7 @@ func (g *Generator) Generate(mod *config.Module) error {
 		if err != nil {
 			return fmt.Errorf("failed to create package directory: %w", err)
 		}
-		err = g.generatePackage(mod, pkg)
+		err = g.generatePackages(mod, pkg)
 		if err != nil {
 			return fmt.Errorf("failed to generate package: %w", err)
 		}
@@ -37,7 +37,7 @@ func (g *Generator) Generate(mod *config.Module) error {
 
 	// Ensure internal directory exists
 	g.file.Mkdir("internal")
-	err := g.generateModule(mod)
+	err := g.generateModules(mod)
 	if err != nil {
 		return fmt.Errorf("failed to generate module: %w", err)
 	}
@@ -45,7 +45,7 @@ func (g *Generator) Generate(mod *config.Module) error {
 	return nil
 }
 
-func (g *Generator) generateModule(mod *config.Module) error {
+func (g *Generator) generateModules(mod *config.Module) error {
 	for _, mGen := range g.mGens {
 		err := mGen.Generate(mod)
 		if err != nil {
@@ -55,7 +55,7 @@ func (g *Generator) generateModule(mod *config.Module) error {
 	return nil
 }
 
-func (g *Generator) generatePackage(mod *config.Module, pkg *config.Package) error {
+func (g *Generator) generatePackages(mod *config.Module, pkg *config.Package) error {
 	for _, pGen := range g.pGens {
 		err := pGen.Generate(mod, pkg)
 		if err != nil {
@@ -64,3 +64,15 @@ func (g *Generator) generatePackage(mod *config.Module, pkg *config.Package) err
 	}
 	return nil
 }
+
+// TODO list generators
+// func (g *Generator) ListGenerators() []string {
+// 	var gens []string
+// 	for _, pGen := range g.pGens {
+// 		gens = append(gens, pGen.Name())
+// 	}
+// 	for _, mGen := range g.mGens {
+// 		gens = append(gens, mGen.Name())
+// 	}
+// 	return gens
+// }

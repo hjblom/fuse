@@ -13,20 +13,9 @@ import (
 
 // visualizeCmd represents the visualize command
 var visualizeCmd = &cobra.Command{
-	Use:   "visualize",
-	Short: "Visualize the project dependency graph",
-	PreRun: func(cmd *cobra.Command, args []string) {
-		// Validation
-		if len(args) != 0 {
-			fmt.Println("No arguments expected")
-			os.Exit(1)
-		}
-		err := util.File.ReadYamlStruct(RootPersistentFlagConfigPath, &RootPersistentConfig)
-		if err != nil {
-			fmt.Println("Error reading config file:", err)
-			os.Exit(1)
-		}
-	},
+	Use:    "visualize",
+	Short:  "Visualize the project dependency graph",
+	PreRun: readAndValidateConfig,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Generate dot
 		dot, err := RootPersistentConfig.Module.ToDOT()

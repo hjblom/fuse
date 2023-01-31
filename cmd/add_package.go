@@ -34,6 +34,7 @@ var packageCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// Create package
 		p := &config.Package{
+			ID:       AddPackageArgName,
 			Name:     AddPackageArgName,
 			Path:     AddPackageFlagPackagePath,
 			Alias:    AddPackageFlagPackageAlias,
@@ -55,4 +56,5 @@ func init() {
 	packageCmd.Flags().StringVarP(&AddPackageFlagPackageAlias, "alias", "a", "", "Alias for package instances (default [package name])")
 	packageCmd.Flags().StringSliceVarP(&AddPackageFlagPackageRequires, "requires", "r", []string{}, "List of package ids this package depends on")
 	packageCmd.Flags().StringSliceVarP(&AddPackageFlagPackageTags, "tag", "t", []string{}, "List of tags for this package")
+	packageCmd.Flags().SortFlags = false
 }
