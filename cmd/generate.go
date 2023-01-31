@@ -15,7 +15,7 @@ import (
 var generateCmd = &cobra.Command{
 	Use:    "generate",
 	Short:  "Generate code for the project based on the configuration file",
-	PreRun: loadAndValidateConfig,
+	PreRun: readAndValidateConfig,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Generate code
 		g := generator.NewGenerator()

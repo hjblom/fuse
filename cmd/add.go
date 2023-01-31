@@ -20,7 +20,7 @@ var (
 var addCmd = &cobra.Command{
 	Use:              "add",
 	Short:            "Add components to the project",
-	PersistentPreRun: loadAndValidateConfig,
+	PersistentPreRun: readAndValidateConfig,
 	PersistentPostRun: func(cmd *cobra.Command, args []string) {
 		// Generate
 		g := generator.NewGenerator()

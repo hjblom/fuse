@@ -29,7 +29,7 @@ var initCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// Init config file
 		c := config.NewConfig(config.WithModulePath(InitArgModulePath))
-		err := util.File.WriteYamlStruct(InitArgModulePath, c)
+		err := util.File.WriteYamlStruct(RootPersistentFlagConfigPath, c)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

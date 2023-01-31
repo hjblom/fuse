@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func loadAndValidateConfig(cmd *cobra.Command, args []string) {
+func readAndValidateConfig(cmd *cobra.Command, args []string) {
 	// Read configuration
 	err := util.File.ReadYamlStruct(RootPersistentFlagConfigPath, &RootPersistentConfig)
 	if err != nil {

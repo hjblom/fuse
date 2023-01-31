@@ -10,6 +10,9 @@ var ModuleGenerators []ModuleGenerator = []ModuleGenerator{
 	modules.ConfigGenerator,
 	modules.ModInitGenerator,
 	modules.ModTidyGenerator,
+	modules.LoggerGenerator,
+	modules.MainGenerator,
+	modules.RuntimeGenerator,
 }
 
 var PackageGenerators []PackageGenerator = []PackageGenerator{

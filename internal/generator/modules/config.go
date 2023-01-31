@@ -37,10 +37,12 @@ func (g *configGenerator) Generate(mod *config.Module) error {
 	j.PackageComment(common.Header)
 
 	// Add config fields
-	fields := jen.Statement(nil)
+	fields := jen.Statement{}
+	fields.Add(generateDefaultLogLevelConfig())
+
 	for _, pkg := range mod.Packages {
 		j.ImportName(pkg.FullPath(mod.Path), pkg.Name)
-		fields.Add(jen.Id(pkg.Name).Op("*").Qual(pkg.FullPath(mod.Path), "Config"))
+		fields.Add(jen.Id(pkg.GoStructName()).Op("*").Qual(pkg.FullPath(mod.Path), "Config"))
 	}
 
 	// Add config struct
@@ -73,4 +75,14 @@ func generateLoadConfigFunction() *jen.Statement {
 		jen.Return(jen.Id("conf"), jen.Nil()),
 	)
 	return s
+}
+
+func generateDefaultLogLevelConfig() *jen.Statement {
+	j := &jen.Statement{}
+	j.Id("LogLevel").String().Tag(map[string]string{
+		"long":        "log-level",
+		"env":         "LOG_LEVEL",
+		"description": "The log level to use. Valid values are: DEBUG, INFO, WARN, ERROR",
+	})
+	return j
 }
