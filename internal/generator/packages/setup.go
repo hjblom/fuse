@@ -50,5 +50,5 @@ func (g *setupGenerator) Generate(mod *config.Module, pkg *config.Package) error
 
 	// Write file
 	content := fmt.Sprintf("%#v", j)
-	return g.file.Write(path, []byte(content))
+	return g.file.WriteFile(path, []byte(content))
 }

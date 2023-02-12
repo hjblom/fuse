@@ -79,7 +79,7 @@ func (g *packageGenerator) Generate(mod *config.Module, pkg *config.Package) err
 	// Write file
 	path := fmt.Sprintf("%s/%s", pkg.RelativePath(), pkg.GoFileName())
 	c := fmt.Sprintf("%#v", j)
-	err := g.file.Write(path, []byte(c))
+	err := g.file.WriteFile(path, []byte(c))
 	if err != nil {
 		return fmt.Errorf("failed to write package file: %w", err)
 	}

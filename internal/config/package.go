@@ -16,7 +16,7 @@ type PackageConfig struct {
 type Package struct {
 	ID       string          `yaml:"id"`
 	Name     string          `yaml:"name"`
-	Path     string          `yaml:"path"`
+	Path     string          `yaml:"path,omitempty"`
 	Config   []PackageConfig `yaml:"config,omitempty"`
 	Alias    string          `yaml:"alias,omitempty"`
 	Tags     []string        `yaml:"tags,omitempty"`
@@ -30,6 +30,9 @@ func (p *Package) FullPath(modPath string) string {
 
 // RelativePath returns the relative path from the module root to the package.
 func (p *Package) RelativePath() string {
+	if p.Path == "" {
+		return p.Name
+	}
 	return fmt.Sprintf("%s/%s", p.Path, p.Name)
 }
 

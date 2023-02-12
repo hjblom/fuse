@@ -31,7 +31,7 @@ func (g *runtimeGenerator) Generate(mod *config.Module) error {
 		return nil
 	}
 
-	err := g.file.Write(path, []byte(runtimeSrc))
+	err := g.file.WriteFile(path, []byte(runtimeSrc))
 	if err != nil {
 		return fmt.Errorf("failed to write file %s: %w", path, err)
 	}
