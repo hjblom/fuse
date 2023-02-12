@@ -62,7 +62,7 @@ func (g *loggerGenerator) Generate(mod *config.Module) error {
 
 	// Write file
 	c := fmt.Sprintf("%#v", j)
-	err := g.file.Write(path, []byte(c))
+	err := g.file.WriteFile(path, []byte(c))
 	if err != nil {
 		return fmt.Errorf("failed to write logger file: %w", err)
 	}

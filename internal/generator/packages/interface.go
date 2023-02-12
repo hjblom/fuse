@@ -37,7 +37,7 @@ func (g *interfaceGenerator) Plugins() map[string]string {
 
 func (g *interfaceGenerator) Generate(mod *config.Module, pkg *config.Package) error {
 	// Skip generation if file already exists
-	path := fmt.Sprintf("%s/%s/%s", pkg.Path, pkg.Name, "interface.go")
+	path := fmt.Sprintf("%s/%s", pkg.RelativePath(), "interface.go")
 	if g.file.Exists(path) {
 		return nil
 	}
@@ -58,7 +58,7 @@ func (g *interfaceGenerator) Generate(mod *config.Module, pkg *config.Package) e
 
 	// Write file
 	c := fmt.Sprintf("%#v", j)
-	err := g.file.Write(path, []byte(c))
+	err := g.file.WriteFile(path, []byte(c))
 	if err != nil {
 		return fmt.Errorf("failed to write interface file: %w", err)
 	}

@@ -52,7 +52,7 @@ var packageCmd = &cobra.Command{
 
 func init() {
 	addCmd.AddCommand(packageCmd)
-	packageCmd.Flags().StringVarP(&AddPackageFlagPackagePath, "path", "p", ".", "Where the package should be placed")
+	packageCmd.Flags().StringVarP(&AddPackageFlagPackagePath, "path", "p", "", "Where the package should be placed")
 	packageCmd.Flags().StringVarP(&AddPackageFlagPackageAlias, "alias", "a", "", "Alias for package instances (default [package name])")
 	packageCmd.Flags().StringSliceVarP(&AddPackageFlagPackageRequires, "requires", "r", []string{}, "List of package ids this package depends on")
 	packageCmd.Flags().StringSliceVarP(&AddPackageFlagPackageTags, "tag", "t", []string{}, "List of tags for this package")

@@ -35,7 +35,7 @@ func (g *fuseGenerator) Plugins() map[string]string {
 	return map[string]string{}
 }
 
-// Generate the fuse.go file.
+// Generate the setup.go file.
 /*
 	func Fuse(c *Config) ([]runtime.Service, error) {
 		services := []Service{}
@@ -90,7 +90,7 @@ func (g *fuseGenerator) Generate(mod *config.Module) error {
 	for _, pkg := range packages {
 		// Skip packages if they are not used in service dependency injection
 		d := mod.GetPackageOutDegree(pkg)
-		if d == 0 && len(pkg.Requires) == 0 {
+		if d == 0 && len(pkg.Requires) == 0 && !pkg.HasTag("service") {
 			continue
 		}
 
@@ -143,7 +143,7 @@ func (g *fuseGenerator) Generate(mod *config.Module) error {
 	// Write to file
 	c := fmt.Sprintf("%#v", j)
 	path := fmt.Sprintf("internal/%s", "setup.go")
-	err = g.file.Write(path, []byte(c))
+	err = g.file.WriteFile(path, []byte(c))
 	if err != nil {
 		return fmt.Errorf("failed to write interface file: %w", err)
 	}

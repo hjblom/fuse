@@ -32,7 +32,7 @@ var visualizeCmd = &cobra.Command{
 		}
 
 		// Write svg to file
-		err = util.File.Write("graph.svg", svg)
+		err = util.File.WriteFile("graph.svg", svg)
 		if err != nil {
 			fmt.Println("failed to write svg to file: ", err)
 			os.Exit(1)

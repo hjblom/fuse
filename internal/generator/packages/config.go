@@ -54,7 +54,7 @@ func (g *configGenerator) Generate(mod *config.Module, pkg *config.Package) erro
 
 	// Write file
 	c := fmt.Sprintf("%#v", j)
-	err := g.file.Write(path, []byte(c))
+	err := g.file.WriteFile(path, []byte(c))
 	if err != nil {
 		return fmt.Errorf("failed to write config file: %w", err)
 	}
